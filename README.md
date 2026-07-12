@@ -1,6 +1,6 @@
 <h1 align="center">Xscriptor AI</h1>
 
-<p align="center">205 ready-to-use AI agents + 21 skills for <a href="https://opencode.ai">OpenCode</a> and <a href="https://docs.anthropic.com/en/docs/claude-code/overview">Claude Code</a>.</p>
+<p align="center">205 ready-to-use AI agents + 21 skills + 8 commands for <a href="https://opencode.ai">OpenCode</a> and <a href="https://docs.anthropic.com/en/docs/claude-code/overview">Claude Code</a>.</p>
 
 <p align="center">Repository: <a href="https://github.com/xscriptor/ai">github.com/xscriptor/ai</a><br>
 npm: <code>npx @xscriptor/ai-agents</code></p>
@@ -16,6 +16,7 @@ npm: <code>npx @xscriptor/ai-agents</code></p>
     <tr><td><a href="senior/skills/"><code>senior/skills/</code></a></td><td>18 deep-reference skills</td></tr>
     <tr><td><a href="scripts/"><code>scripts/</code></a></td><td>8 utility scripts (install, validate, generate, etc.)</td></tr>
     <tr><td><a href="packages/ai-agents/"><code>packages/ai-agents/</code></a></td><td>npm package @xscriptor/ai-agents</td></tr>
+    <tr><td><a href="commands/"><code>commands/</code></a></td><td>8 OpenCode commands (/review, /audit, /docs, /arch, /test, /deploy, /refactor, /design)</td></tr>
   </tbody>
 </table>
 
@@ -40,6 +41,7 @@ npx @xscriptor/ai-agents
 npx @xscriptor/ai-agents --agents   # specialized only
 npx @xscriptor/ai-agents --senior   # senior only
 npx @xscriptor/ai-agents --skills   # skills only
+npx @xscriptor/ai-agents --commands # commands only
 npx @xscriptor/ai-agents --groups general,languages
 npx @xscriptor/ai-agents --anthropic   # Claude Code
 npx @xscriptor/ai-agents --project     # current project
@@ -53,6 +55,7 @@ cd ai
 ./scripts/install-agents.sh --agents
 ./scripts/install-agents.sh --senior
 ./scripts/install-agents.sh --skills
+./scripts/install-agents.sh --commands
 
 # Remote (installs everything by default)
 curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/scripts/install-agents.sh | bash</code></pre>

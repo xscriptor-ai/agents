@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// @xscriptor/ai-agents - Install AI agents and skills for OpenCode and Claude Code.
-// Usage: npx @xscriptor/ai-agents [--all|--agents|--senior|--skills] [--opencode|--anthropic|--project]
-import { existsSync, mkdirSync, copyFileSync, readdirSync, cpSync } from "fs";
+// @xscriptor/ai-agents - Install AI agents, skills, and commands for OpenCode and Claude Code.
+// Usage: npx @xscriptor/ai-agents [--all|--agents|--senior|--skills|--commands] [--opencode|--anthropic|--project]
+import { existsSync, mkdirSync, copyFileSync, readdirSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -12,15 +12,17 @@ const REPO_AGENTS = join(REPO_DIR, "agents");
 const REPO_SENIOR = join(REPO_DIR, "senior/agents");
 const REPO_SKILLS = join(REPO_DIR, "skills");
 const REPO_SENIOR_SKILLS = join(REPO_DIR, "senior/skills");
+const REPO_COMMANDS = join(REPO_DIR, "commands");
 
 const HELP = `
 Usage: npx @xscriptor/ai-agents [options]
 
 Selection (default: --all):
-  --all               Install everything: agents + senior + skills
+  --all               Install everything: agents + senior + skills + commands
   --agents            Specialized agents only
   --senior            Senior agents only
   --skills            Skills only (project + senior)
+  --commands          Commands only
   --groups LIST       Comma-separated groups (e.g. general,web/security)
 
 Target (default: --opencode):
@@ -37,6 +39,7 @@ Examples:
   npx @xscriptor/ai-agents
   npx @xscriptor/ai-agents --senior
   npx @xscriptor/ai-agents --skills
+  npx @xscriptor/ai-agents --commands
   npx @xscriptor/ai-agents --groups general,languages
 `;
 
@@ -58,7 +61,6 @@ const SENIOR_SKILLS = [
   "systems", "testing", "typescript", "web",
 ];
 
-// --- Route skills (source → dest name) ---
 const SKILL_ROUTES = [
   { name: "xscriptor", src: "web/literature/xscriptor" },
   { name: "devx", src: "web/dev/devx/devx" },
@@ -73,25 +75,6 @@ function dstPath(target, sub) {
   return join(xdg, "opencode", sub);
 }
 
-function copyDir(src, dst, dryRun) {
-  if (!existsSync(src)) return 0;
-  let count = 0;
-  const items = readdirSync(src);
-  mkdirSync(dst, { recursive: true });
-  for (const item of items) {
-    const s = join(src, item);
-    const d = join(dst, item);
-    if (!dryRun) {
-      if (existsSync(s) && (s.endsWith(".md"))) {
-        copyFileSync(s, d);
-      }
-    }
-    count++;
-    console.log(`    ${dryRun ? "-" : "+"} ${item}`);
-  }
-  return count;
-}
-
 function copySkill(name, srcDir, dstDir, dryRun) {
   const skillSrc = join(srcDir, name);
   const skillDst = join(dstDir, name);
@@ -101,7 +84,6 @@ function copySkill(name, srcDir, dstDir, dryRun) {
   if (!dryRun) copyFileSync(skillFile, join(skillDst, "SKILL.md"));
   console.log(`    ${dryRun ? "-" : "+"} ${name}/SKILL.md`);
   let count = 1;
-  // Copy references/ if they exist
   const refsSrc = join(skillSrc, "references");
   if (existsSync(refsSrc)) {
     const refsDst = join(skillDst, "references");
@@ -124,6 +106,7 @@ function main() {
 
   const mode = args.includes("--senior") ? "senior"
     : args.includes("--skills") ? "skills"
+    : args.includes("--commands") ? "commands"
     : args.includes("--agents") ? "agents"
     : args.includes("--groups") ? "groups"
     : "all";
@@ -152,11 +135,16 @@ function main() {
       }
     }
     console.log(`\nSenior skills: ${SENIOR_SKILLS.length}`);
+    if (existsSync(REPO_COMMANDS)) {
+      const cmds = readdirSync(REPO_COMMANDS).filter(f => f.endsWith(".md")).length;
+      console.log(`Commands: ${cmds}`);
+    }
     return;
   }
 
   const agentsDst = dstPath(target, "agents");
   const skillsDst = dstPath(target, "skills");
+  const commandsDst = dstPath(target, "commands");
   let total = 0;
 
   const groupsArg = args.indexOf("--groups");
@@ -164,12 +152,13 @@ function main() {
 
   console.log(`==> @xscriptor/ai-agents (mode: ${mode})`);
   console.log(`    → ${agentsDst}`);
-  console.log(`    → ${skillsDst}\n`);
+  console.log(`    → ${skillsDst}`);
+  console.log(`    → ${commandsDst}\n`);
 
-  // --- Install agents ---
   const doAgents = mode === "all" || mode === "agents" || mode === "groups";
   const doSenior = mode === "all" || mode === "senior";
   const doSkills = mode === "all" || mode === "skills";
+  const doCommands = mode === "all" || mode === "commands";
 
   if (doAgents) {
     const groups = mode === "groups" ? selectedGroups : AGENT_GROUPS;
@@ -212,17 +201,30 @@ function main() {
 
   if (doSkills) {
     console.log("  [Skills]");
-    // Regular skills
     for (const sk of SKILL_ROUTES) {
       const src = join(REPO_SKILLS, sk.src);
       console.log(`    [${sk.name}]`);
       total += copySkill(sk.name, join(REPO_SKILLS, sk.src, ".."), skillsDst, dryRun);
     }
-    // Senior skills
     console.log("    [senior]");
     for (const sk of SENIOR_SKILLS) {
       const cnt = copySkill(sk, REPO_SENIOR_SKILLS, skillsDst, dryRun);
       if (cnt > 0) total += cnt;
+    }
+  }
+
+  if (doCommands) {
+    console.log("  [Commands]");
+    if (existsSync(REPO_COMMANDS)) {
+      const files = readdirSync(REPO_COMMANDS).filter(f => f.endsWith(".md"));
+      for (const f of files) {
+        if (!dryRun) {
+          mkdirSync(commandsDst, { recursive: true });
+          copyFileSync(join(REPO_COMMANDS, f), join(commandsDst, f));
+        }
+        console.log(`    ${dryRun ? "-" : "+"} ${f}`);
+        total++;
+      }
     }
   }
 

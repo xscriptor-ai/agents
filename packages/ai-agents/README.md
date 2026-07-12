@@ -1,8 +1,8 @@
 <h1 align="center">@xscriptor/ai-agents</h1>
 
-<p>205 ready-to-use AI agents + 21 skills for <a href="https://opencode.ai">OpenCode</a> and <a href="https://docs.anthropic.com/en/docs/claude-code/overview">Claude Code</a>.</p>
+<p>205 ready-to-use AI agents + 21 skills + 8 commands for <a href="https://opencode.ai">OpenCode</a> and <a href="https://docs.anthropic.com/en/docs/claude-code/overview">Claude Code</a>.</p>
 
-<p>Includes 181 specialized agents, 24 consolidated senior agents, 3 project skills, and 18 deep-reference skills.</p>
+<p>Includes 181 specialized agents, 24 consolidated senior agents, 3 project skills, 18 deep-reference skills, and 8 custom commands.</p>
 
 <h2>Installation</h2>
 
@@ -17,6 +17,9 @@ npx @xscriptor/ai-agents --senior
 
 # Only skills
 npx @xscriptor/ai-agents --skills
+
+# Only commands
+npx @xscriptor/ai-agents --commands
 
 # Specific groups
 npx @xscriptor/ai-agents --groups general,web/security

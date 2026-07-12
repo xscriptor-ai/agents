@@ -12,10 +12,11 @@
 #   curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/scripts/install-agents.sh | bash -s -- --project
 #
 # Local:
-#   ./install-agents.sh                    # Everything (agents + senior + skills)
+#   ./install-agents.sh                    # Everything (agents + senior + skills + commands)
 #   ./install-agents.sh --agents           # Specialized agents only
 #   ./install-agents.sh --senior           # Senior agents only
 #   ./install-agents.sh --skills           # Skills only
+#   ./install-agents.sh --commands         # Commands only
 #   ./install-agents.sh --groups general   # Specific groups only
 #   ./install-agents.sh --interactive      # Interactive selection
 #   ./install-agents.sh --project          # Install in .opencode/ (current dir)
@@ -27,6 +28,7 @@ AGENTS_SRC="$REPO_DIR/agents"
 SENIOR_SRC="$REPO_DIR/senior/agents"
 SKILLS_SRC="$REPO_DIR/skills"
 SENIOR_SKILLS_SRC="$REPO_DIR/senior/skills"
+COMMANDS_SRC="$REPO_DIR/commands"
 
 # --- Group definitions ---
 ALL_GROUPS=(
@@ -50,13 +52,14 @@ SENIOR_SKILLS=(
 # --- Helpers ---
 usage() {
   echo "Usage: $0 [OPTIONS]"
-  echo "Install Xscriptor AI agents and skills for OpenCode."
+  echo "Install Xscriptor AI agents, skills, and commands for OpenCode."
   echo ""
   echo "Selection (default: --all):"
-  echo "  --all              Install everything: agents + senior + skills"
+  echo "  --all              Everything: agents + senior + skills + commands"
   echo "  --agents           Specialized agents only"
   echo "  --senior           Senior agents only"
   echo "  --skills           Skills only (project + senior)"
+  echo "  --commands         Commands only"
   echo "  --groups LIST      Comma-separated groups (e.g. general,web/frontend)"
   echo "  --interactive      Select groups interactively"
   echo ""
@@ -88,6 +91,10 @@ detect_project_skills() {
   echo "$(pwd)/.opencode/skills"
 }
 
+detect_project_commands() {
+  echo "$(pwd)/.opencode/commands"
+}
+
 copy_file() {
   local src="$1" dst="$2"
   if [[ -n "${DRY_RUN:-}" ]]; then
@@ -110,6 +117,7 @@ while [[ $# -gt 0 ]]; do
     --agents) MODE="agents"; shift ;;
     --senior) MODE="senior"; shift ;;
     --skills) MODE="skills"; shift ;;
+    --commands) MODE="commands"; shift ;;
     --groups) MODE="groups"; IFS=',' read -ra GROUP_SELECT <<< "$2"; shift 2 ;;
     --interactive) MODE="interactive"; shift ;;
     --global) DEST_MODE="global"; shift ;;
@@ -140,9 +148,11 @@ done
 if [[ "$DEST_MODE" == "project" ]]; then
   AGENTS_DST=$(detect_project_agents)
   SKILLS_DST=$(detect_project_skills)
+  COMMANDS_DST=$(detect_project_commands)
 else
   AGENTS_DST=$(detect_opencode_agents)
   SKILLS_DST=$(detect_opencode_skills)
+  COMMANDS_DST=$(detect_opencode_agents | sed 's/agents/commands/')
 fi
 
 # --- Execute ---
@@ -150,6 +160,7 @@ echo "==> Xscriptor AI Installer"
 echo "    Mode: $MODE"
 echo "    Agents → $AGENTS_DST"
 echo "    Skills → $SKILLS_DST"
+echo "    Commands → $COMMANDS_DST"
 echo ""
 
 INSTALL_COUNT=0
@@ -215,6 +226,17 @@ fi
 
 if [[ "$MODE" == "all" || "$MODE" == "senior" ]]; then
   install_agents "$SENIOR_SRC" "$AGENTS_DST" "Senior Agents" "${SENIOR_GROUPS[@]}"
+fi
+
+if [[ "$MODE" == "all" || "$MODE" == "commands" ]]; then
+  echo "  [Commands]"
+  if [[ -d "$COMMANDS_SRC" ]]; then
+    for cmd in "$COMMANDS_SRC"/*.md; do
+      if [[ -f "$cmd" ]]; then
+        copy_file "$cmd" "$COMMANDS_DST/$(basename "$cmd")"
+      fi
+    done
+  fi
 fi
 
 if [[ "$MODE" == "all" || "$MODE" == "skills" ]]; then
