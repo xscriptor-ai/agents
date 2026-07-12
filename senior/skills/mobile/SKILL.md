@@ -1,4 +1,6 @@
 ---
+name: mobile
+version: 1.0.0
 description: "Deep mobile patterns for cross-platform decision guide, iOS, Android, React Native, and Flutter"
 ---
 

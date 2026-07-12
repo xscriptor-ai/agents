@@ -1,4 +1,6 @@
 ---
+name: web
+version: 1.0.0
 description: "Deep web patterns for full-stack architecture, state management, CSS, performance, accessibility, and edge"
 ---
 

@@ -1,7 +1,6 @@
 ---
 description: Reviews code for quality, best practices, and potential issues
 mode: subagent
-model: anthropic/claude-sonnet-4-20250514
 temperature: 0.1
 color: accent
 permission:

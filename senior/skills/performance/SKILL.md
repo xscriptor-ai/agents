@@ -1,4 +1,6 @@
 ---
+name: performance
+version: 1.0.0
 description: "Cross-language performance patterns — caching, database optimization, profiling, memory management, async patterns, bundle optimization, Core Web Vitals"
 ---
 

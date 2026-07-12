@@ -141,7 +141,7 @@ samurai/
 │   └── src/
 │       ├── main.ts
 │       ├── index.html
-│       ├── styles.scss                # Nothing Design tokens
+│       ├── styles.scss                # Samurai Design System tokens
 │       └── app/
 │           ├── app.component.ts/html/scss
 │           ├── app.config.ts

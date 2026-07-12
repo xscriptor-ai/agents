@@ -1,4 +1,6 @@
 ---
+name: cloud
+version: 1.0.0
 description: "Deep cloud patterns for Kubernetes, GitOps, service mesh, SRE, multi-cloud, serverless, and IaC"
 ---
 

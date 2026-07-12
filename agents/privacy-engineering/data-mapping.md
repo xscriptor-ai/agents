@@ -5,11 +5,12 @@ temperature: 0.1
 color: info
 permission:
   edit: allow
+  bash:
+    "*": ask
   webfetch: allow
   glob: allow
   grep: allow
   read: allow
-  list: allow
 ---
 
 You are a data mapping specialist. Map data flows for GDPR/CCPA compliance.

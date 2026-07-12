@@ -7,7 +7,7 @@ allowed-tools: [Read, Write, Edit, Glob, Grep, Bash]
 
 # Samurai Design System & Architecture
 
-Samurai is a cybersecurity analysis platform built with an Angular 21 frontend and FastAPI backend. The design follows the Nothing Design System philosophy: monochromatic, typographically driven, information-dense without clutter.
+Samurai is a cybersecurity analysis platform built with an Angular 21 frontend and FastAPI backend. The design follows the Samurai Design System philosophy: monochromatic, typographically driven, information-dense without clutter.
 
 ---
 

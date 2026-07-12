@@ -1,4 +1,6 @@
 ---
+name: deployment
+version: 1.0.0
 description: "Deployment patterns — Docker multi-stage builds, CI/CD pipeline design, blue-green/canary/rolling deployments, IaC patterns, secret management"
 ---
 

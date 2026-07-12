@@ -1,4 +1,6 @@
 ---
+name: api-design
+version: 1.0.0
 description: "API design patterns — RESTful conventions, GraphQL schema design, gRPC service definitions, versioning strategies, pagination, error handling, API security"
 ---
 

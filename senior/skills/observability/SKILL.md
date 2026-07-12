@@ -1,4 +1,6 @@
 ---
+name: observability
+version: 1.0.0
 description: "Observability patterns — structured logging, distributed tracing (OpenTelemetry), metrics (Prometheus, Grafana), alerting, dashboards, SLO/SLI definitions"
 ---
 

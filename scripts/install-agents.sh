@@ -1,41 +1,34 @@
 #!/usr/bin/env bash
-# Install OpenCode agents from https://github.com/xscriptor/ai to any destination.
+# Install all Xscriptor AI agents and skills for OpenCode.
 #
-# Repo structure:
-#   agents/      91 agents for OpenCode + Claude Code
-#   skills/      3 SKILL.md for both platforms
-#   scripts/     utility scripts (this file lives here)
-#   packages/    npm package @xscriptor/ai-agents
+# Sources:
+#   agents/          181 specialized agents
+#   senior/agents/    24 consolidated senior agents
+#   skills/            3 project skills (xscriptor, devx, samurai)
+#   senior/skills/    18 deep-reference skills
 #
 # Remote:
 #   curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/scripts/install-agents.sh | bash
 #   curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/scripts/install-agents.sh | bash -s -- --project
-#   curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/scripts/install-agents.sh | bash -s -- --groups general,languages
-#
-# Also available via npx:
-#   npx @xscriptor/ai-agents
-#   npx @xscriptor/ai-agents --anthropic
 #
 # Local:
-#   ./install-agents.sh                    # All 91 agents, global opencode
+#   ./install-agents.sh                    # Everything (agents + senior + skills)
+#   ./install-agents.sh --agents           # Specialized agents only
+#   ./install-agents.sh --senior           # Senior agents only
+#   ./install-agents.sh --skills           # Skills only
 #   ./install-agents.sh --groups general   # Specific groups only
 #   ./install-agents.sh --interactive      # Interactive selection
-#   ./install-agents.sh --project          # Install in .opencode/agents/ (current dir)
-#   ./install-agents.sh --dest ~/my-agents # Custom destination
+#   ./install-agents.sh --project          # Install in .opencode/ (current dir)
 #   ./install-agents.sh --dry-run          # Preview only
 set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 AGENTS_SRC="$REPO_DIR/agents"
+SENIOR_SRC="$REPO_DIR/senior/agents"
+SKILLS_SRC="$REPO_DIR/skills"
+SENIOR_SKILLS_SRC="$REPO_DIR/senior/skills"
 
-# Detect platform
-case "$(uname -s)" in
-  Darwin) PLATFORM="macOS" ;;
-  Linux)  PLATFORM="Linux" ;;
-  MINGW*|MSYS*|CYGWIN*) PLATFORM="Windows (WSL/Git Bash)" ;;
-  *)      PLATFORM="$(uname -s)" ;;
-esac
-
+# --- Group definitions ---
 ALL_GROUPS=(
   general languages web/security web/architecture web/frontend web/backend
   mobile data-ml cloud testing graphql embedded game-dev content observability compliance
@@ -43,122 +36,208 @@ ALL_GROUPS=(
   security/red-team security/blue-team
 )
 
+SENIOR_GROUPS=(
+  cloud compliance content data-ml game-dev github go java-kotlin
+  mobile python rust security systems testing typescript web
+)
+
+SENIOR_SKILLS=(
+  api-design architecture cloud deployment go java-kotlin mobile
+  monorepo observability performance python rust secure-coding security
+  systems testing typescript web
+)
+
+# --- Helpers ---
 usage() {
   echo "Usage: $0 [OPTIONS]"
-  echo "Install OpenCode agents."
+  echo "Install Xscriptor AI agents and skills for OpenCode."
   echo ""
-  echo "Destination options (last one wins):"
-  echo "  --global           Install to OpenCode global agents dir (default)"
-  echo "  --project          Install to .opencode/agents/ in current directory"
-  echo "  --dest PATH        Install to a custom directory"
-  echo ""
-  echo "Selection options:"
-  echo "  --all              Install all groups (default)"
-  echo "  --groups LIST      Comma-separated group names (e.g. general,web/frontend)"
+  echo "Selection (default: --all):"
+  echo "  --all              Install everything: agents + senior + skills"
+  echo "  --agents           Specialized agents only"
+  echo "  --senior           Senior agents only"
+  echo "  --skills           Skills only (project + senior)"
+  echo "  --groups LIST      Comma-separated groups (e.g. general,web/frontend)"
   echo "  --interactive      Select groups interactively"
   echo ""
-  echo "Other options:"
+  echo "Destination (default: --global):"
+  echo "  --global           Install to OpenCode global dir (~/.config/opencode/)"
+  echo "  --project          Install to .opencode/ in current directory"
+  echo ""
+  echo "Other:"
   echo "  --dry-run          Preview without copying"
   echo "  --list             List available groups"
   echo "  --help             Show this help"
 }
 
-list_groups() {
-  echo "Available groups ($(echo "${#ALL_GROUPS[@]}")):"
-  for g in "${ALL_GROUPS[@]}"; do
-    count=$(find "$AGENTS_SRC/$g" -maxdepth 1 -name '*.md' 2>/dev/null | wc -l | tr -d ' ')
-    echo "  $g ($count agents)"
-  done
-}
-
-# --- Resolve destination ---
-detect_opencode_global() {
-  # OpenCode: respects XDG_CONFIG_HOME, falls back to ~/.config
+detect_opencode_agents() {
   local base="${XDG_CONFIG_HOME:-$HOME/.config}"
   echo "$base/opencode/agents"
 }
 
-detect_opencode_project() {
+detect_opencode_skills() {
+  local base="${XDG_CONFIG_HOME:-$HOME/.config}"
+  echo "$base/opencode/skills"
+}
+
+detect_project_agents() {
   echo "$(pwd)/.opencode/agents"
 }
 
-DEST=""
-if [[ $# -eq 0 ]]; then
-  DEST=$(detect_opencode_global)
-  SELECTED=("${ALL_GROUPS[@]}")
-fi
+detect_project_skills() {
+  echo "$(pwd)/.opencode/skills"
+}
+
+copy_file() {
+  local src="$1" dst="$2"
+  if [[ -n "${DRY_RUN:-}" ]]; then
+    echo "    - $(basename "$src")"
+  else
+    mkdir -p "$(dirname "$dst")"
+    cp "$src" "$dst"
+    echo "    + $(basename "$src")"
+  fi
+  INSTALL_COUNT=$((INSTALL_COUNT + 1))
+}
+
+# --- Resolve mode ---
+MODE="all"
+DEST_MODE="global"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --global) DEST=$(detect_opencode_global); shift ;;
-    --project) DEST=$(detect_opencode_project); shift ;;
-    --dest) DEST="$2"; shift 2 ;;
-    --all) SELECTED=("${ALL_GROUPS[@]}"); shift ;;
-    --groups) IFS=',' read -ra SELECTED <<< "$2"; shift 2 ;;
-    --interactive) INTERACTIVE=1; shift ;;
+    --all) MODE="all"; shift ;;
+    --agents) MODE="agents"; shift ;;
+    --senior) MODE="senior"; shift ;;
+    --skills) MODE="skills"; shift ;;
+    --groups) MODE="groups"; IFS=',' read -ra GROUP_SELECT <<< "$2"; shift 2 ;;
+    --interactive) MODE="interactive"; shift ;;
+    --global) DEST_MODE="global"; shift ;;
+    --project) DEST_MODE="project"; shift ;;
     --dry-run) DRY_RUN=1; shift ;;
-    --list) list_groups; exit 0 ;;
+    --list)
+      echo "Available agent groups:"
+      for g in "${ALL_GROUPS[@]}"; do
+        c=$(find "$AGENTS_SRC/$g" -maxdepth 1 -name '*.md' 2>/dev/null | wc -l | tr -d ' ')
+        echo "  $g ($c agents)"
+      done
+      echo ""
+      echo "Senior agent groups:"
+      for g in "${SENIOR_GROUPS[@]}"; do
+        c=$(find "$SENIOR_SRC/$g" -maxdepth 1 -name '*.md' 2>/dev/null | wc -l | tr -d ' ')
+        echo "  $g ($c agents)"
+      done
+      echo ""
+      echo "Senior skills: ${#SENIOR_SKILLS[@]}"
+      exit 0
+      ;;
     --help) usage; exit 0 ;;
-    --skills) echo "Use: npx @xscriptor/ai-agents --skills"; exit 0 ;;
-    --anthropic) echo "Use: npx @xscriptor/ai-agents --anthropic"; exit 0 ;;
     *) echo "Unknown: $1"; usage; exit 1 ;;
-
   esac
 done
 
-# Defaults
-if [[ -z "${SELECTED[*]:-}" ]]; then
-  SELECTED=("${ALL_GROUPS[@]}")
-fi
-if [[ -z "$DEST" ]]; then
-  DEST=$(detect_opencode_global)
+# --- Resolve destination ---
+if [[ "$DEST_MODE" == "project" ]]; then
+  AGENTS_DST=$(detect_project_agents)
+  SKILLS_DST=$(detect_project_skills)
+else
+  AGENTS_DST=$(detect_opencode_agents)
+  SKILLS_DST=$(detect_opencode_skills)
 fi
 
 # --- Execute ---
-echo "==> Xscriptor OpenCode Agents"
-echo "    Platform: $PLATFORM"
-echo "    Destination: $DEST"
+echo "==> Xscriptor AI Installer"
+echo "    Mode: $MODE"
+echo "    Agents → $AGENTS_DST"
+echo "    Skills → $SKILLS_DST"
 echo ""
 
 INSTALL_COUNT=0
-for group in "${SELECTED[@]}"; do
-  src_dir="$AGENTS_SRC/$group"
-  if [[ ! -d "$src_dir" ]]; then
-    echo "  [SKIP] $group (directory not found)"
-    continue
-  fi
 
-  files=("$src_dir"/*.md)
-  if [[ ! -f "${files[0]}" ]]; then
-    echo "  [SKIP] $group (no .md files)"
-    continue
-  fi
-
-  echo "  [$group]"
-  for src in "${files[@]}"; do
-    name=$(basename "$src")
-    if [[ -n "${DRY_RUN:-}" ]]; then
-      echo "    - $name"
-    else
-      mkdir -p "$DEST"
-      cp "$src" "$DEST/$name"
-      echo "    + $name"
+# --- Install specialized agents ---
+install_agents() {
+  local src="$1" dst="$2" desc="$3"
+  shift 3
+  local groups=("$@")
+  echo "  [$desc]"
+  for group in "${groups[@]}"; do
+    local gs="$src/$group"
+    if [[ ! -d "$gs" ]]; then
+      echo "    [SKIP] $group"
+      continue
     fi
-    ((INSTALL_COUNT++))
+    local files=("$gs"/*.md)
+    if [[ ! -f "${files[0]}" ]]; then
+      echo "    [SKIP] $group (empty)"
+      continue
+    fi
+    echo "    [$group]"
+    for f in "${files[@]}"; do
+      copy_file "$f" "$dst/$(basename "$f")"
+    done
   done
-done
+}
 
+# --- Install skills ---
+install_skill() {
+  local name="$1" src="$2" dst="$3"
+  local skill_dir="$dst/$name"
+  if [[ -f "$src/SKILL.md" ]]; then
+    echo "    [${name}]"
+    if [[ -n "${DRY_RUN:-}" ]]; then
+      echo "      - SKILL.md"
+    else
+      mkdir -p "$skill_dir"
+      cp "$src/SKILL.md" "$skill_dir/SKILL.md"
+      echo "      + SKILL.md"
+    fi
+    INSTALL_COUNT=$((INSTALL_COUNT + 1))
+    local refs="$src/references"
+    if [[ -d "$refs" ]]; then
+      if [[ -n "${DRY_RUN:-}" ]]; then
+        echo "      - references/"
+      else
+        cp -r "$refs"/* "$skill_dir/references/" 2>/dev/null || true
+        echo "      + references/"
+      fi
+    fi
+  fi
+}
+
+# --- Mode dispatch ---
+if [[ "$MODE" == "all" || "$MODE" == "agents" || "$MODE" == "groups" ]]; then
+  if [[ "$MODE" == "groups" ]]; then
+    install_agents "$AGENTS_SRC" "$AGENTS_DST" "Agents" "${GROUP_SELECT[@]}"
+  else
+    install_agents "$AGENTS_SRC" "$AGENTS_DST" "Specialized Agents" "${ALL_GROUPS[@]}"
+  fi
+fi
+
+if [[ "$MODE" == "all" || "$MODE" == "senior" ]]; then
+  install_agents "$SENIOR_SRC" "$AGENTS_DST" "Senior Agents" "${SENIOR_GROUPS[@]}"
+fi
+
+if [[ "$MODE" == "all" || "$MODE" == "skills" ]]; then
+  echo "  [Skills]"
+  # Regular skills
+  install_skill "xscriptor" "$SKILLS_SRC/web/literature/xscriptor" "$SKILLS_DST"
+  install_skill "devx" "$SKILLS_SRC/web/dev/devx/devx" "$SKILLS_DST"
+  install_skill "samurai" "$SKILLS_SRC/web/cybersec/samurai" "$SKILLS_DST"
+  # Senior skills
+  for sk in "${SENIOR_SKILLS[@]}"; do
+    install_skill "$sk" "$SENIOR_SKILLS_SRC/$sk" "$SKILLS_DST"
+  done
+fi
+
+# --- Report ---
 echo ""
 if [[ -n "${DRY_RUN:-}" ]]; then
-  echo "==> Dry run: $INSTALL_COUNT agents would be installed."
+  echo "==> Dry run: $INSTALL_COUNT items would be installed."
 else
-  echo "==> $INSTALL_COUNT agents installed to $DEST"
+  echo "==> $INSTALL_COUNT items installed."
   echo ""
-  echo "Usage: @agent-name in OpenCode (e.g. @code-reviewer)"
+  echo "  Agents:   $AGENTS_DST"
+  echo "  Skills:   $SKILLS_DST"
   echo ""
-  echo "Notes:"
-  echo "  - For skills: npx @xscriptor/ai-agents --skills"
-  echo "  - For Claude Code: npx @xscriptor/ai-agents --anthropic"
-  echo "  - Repo: https://github.com/xscriptor/ai"
-  echo "  - Install: agents/, skills/, scripts/, packages/ai-agents/"
+  echo "  Repo:     https://github.com/xscriptor/ai"
 fi

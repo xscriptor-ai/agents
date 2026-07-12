@@ -1,4 +1,6 @@
 ---
+name: secure-coding
+version: 1.0.0
 description: "Cross-language secure coding patterns — injection prevention, XSS, CSRF, crypto, secrets management, input validation, output encoding"
 ---
 

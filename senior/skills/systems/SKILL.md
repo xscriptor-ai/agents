@@ -1,4 +1,6 @@
 ---
+name: systems
+version: 1.0.0
 description: "Deep systems patterns for shell scripting, Linux/macOS/Windows administration, networking, storage, and performance"
 ---
 

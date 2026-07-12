@@ -1,4 +1,6 @@
 ---
+name: security
+version: 1.0.0
 description: "Deep security patterns for threat modeling, OWASP, authentication, API security, container/supply chain, LLM, and zero-trust"
 ---
 

@@ -1,4 +1,6 @@
 ---
+name: testing
+version: 1.0.0
 description: "Cross-language testing strategies — unit vs integration vs E2E, mocking, test data management, flaky test handling, coverage metrics, CI integration"
 ---
 

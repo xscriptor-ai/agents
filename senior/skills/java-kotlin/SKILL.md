@@ -1,4 +1,6 @@
 ---
+name: java-kotlin
+version: 1.0.0
 description: "Deep JVM patterns for Java 21+, Kotlin, Spring Boot, JPA, Gradle, JVM tuning, and Android"
 ---
 

@@ -1,4 +1,6 @@
 ---
+name: rust
+version: 1.0.0
 description: "Deep Rust patterns for project structure, async, error handling, unsafe, FFI, embedded, and testing"
 ---
 

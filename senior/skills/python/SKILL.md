@@ -1,4 +1,6 @@
 ---
+name: python
+version: 1.0.0
 description: "Deep Python patterns for project structure, async, typing, FastAPI, SQLAlchemy, and packaging"
 ---
 

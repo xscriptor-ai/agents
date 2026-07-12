@@ -1,4 +1,6 @@
 ---
+name: typescript
+version: 1.0.0
 description: "Deep TypeScript patterns for advanced type system usage, module resolution, and build configuration"
 ---
 

@@ -1,4 +1,6 @@
 ---
+name: go
+version: 1.0.0
 description: "Deep Go patterns for project layout, concurrency, error handling, testing, and profiling"
 ---
 

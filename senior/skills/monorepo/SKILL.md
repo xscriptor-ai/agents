@@ -1,4 +1,6 @@
 ---
+name: monorepo
+version: 1.0.0
 description: "Monorepo management — tool comparison (Nx, Turborepo, Lerna, pnpm workspaces), shared config, dependency management, build caching, CI optimization, versioning"
 ---
 

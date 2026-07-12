@@ -1,4 +1,6 @@
 ---
+name: architecture
+version: 1.0.0
 description: "Architecture and design patterns — ADR format, C4 model, design patterns catalog, architecture decision records template, system context diagrams"
 ---
 
