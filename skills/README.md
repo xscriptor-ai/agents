@@ -37,25 +37,32 @@
 
 <h2>Installation</h2>
 
-<h3>Remote (no clone)</h3>
+<h3>Via install script (recommended)</h3>
+
+<pre><code># npx (no clone) - installs everything including skills
+npx @xscriptor/ai-agents
+
+# Skills only
+npx @xscriptor/ai-agents --skills
+
+# Clone and install all
+git clone https://github.com/xscriptor/ai.git
+cd ai
+./scripts/install-agents.sh</code></pre>
+
+<p>The install script copies all 3 project skills and 18 senior skills to <code>~/.config/opencode/skills/</code>.</p>
+
+<h3>Manual</h3>
 
 <pre><code># Clone skills directory only
 git clone --depth 1 --filter=blob:none --sparse https://github.com/xscriptor/ai.git
 cd ai/skills
 
-# Copy to OpenCode skills directory
-cp -r web/* ~/.config/opencode/skills/</code></pre>
+# Project skills only
+cp -r web/* ~/.config/opencode/skills/
 
-<h3>Clone and install</h3>
-
-<pre><code>git clone https://github.com/xscriptor/ai.git
-cd ai/skills
-cp -r web/* ~/.config/opencode/skills/</code></pre>
-
-<h3>Per-project installation</h3>
-
-<pre><code>cp -r skills/web/literature/xscriptor .opencode/skills/
-cp -r skills/web/dev/devx .opencode/skills/</code></pre>
+# Senior skills (also needed for senior agents)
+cp -r ../senior/skills/* ~/.config/opencode/skills/</code></pre>
 
 <h2>Usage</h2>
 

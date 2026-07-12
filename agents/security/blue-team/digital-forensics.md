@@ -1,5 +1,5 @@
 ---
-description: Digital forensics — memory, disk, network, and cloud forensic analysis
+description: Digital forensics — memory, disk, network, mobile, and cloud forensic analysis
 mode: subagent
 temperature: 0.1
 color: error
@@ -315,6 +315,24 @@ az monitor activity-log list --start-time 2024-03-01
 # Defender for Cloud alerts
 az security alert list
 ```
+
+## Mobile Forensics
+
+### iOS
+- Advanced forensic extraction (Cellebrite UFED, GrayKey): full file system access
+- Logical extraction: iTunes backup (encrypted/unencrypted), `libimobiledevice`
+- Keychain analysis: `keychain_dump`, `mvt-ios` for Indicators of Compromise
+- SQLite analysis: SMS, call history, contacts, Safari, third-party app databases
+- KnowledgeC database: app usage, notifications, keyboard use patterns
+- Health data: steps, sleep, workout, location correlation
+
+### Android
+- Physical extraction: `dd` of partitions on rooted device, custom recovery image
+- Logical extraction: `adb backup -f backup.ab` (with or without backup password)
+- Forensic tools: Cellebrite UFED, Oxygen Forensic, Magnet ACQUIRE
+- Application data: `/data/data/com.app.name/` databases and shared_prefs
+- Media store: `/sdcard/DCIM/`, `/sdcard/Download/`, external SD card
+- Google Takeout: cloud-extracted device data (contacts, calendar, photos, location history)
 
 ## Chain of Custody
 

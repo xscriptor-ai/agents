@@ -1,7 +1,6 @@
 ---
 description: Performs security audits and identifies vulnerabilities
 mode: subagent
-model: anthropic/claude-sonnet-4-20250514
 temperature: 0.1
 color: error
 permission:

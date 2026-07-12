@@ -1,6 +1,6 @@
 # Samurai Design System -- Component Patterns
 
-This documents the actual component patterns used in the Samurai frontend, based on the Nothing Design philosophy.
+This documents the actual component patterns used in the Samurai frontend, based on the Samurai design philosophy.
 
 ---
 

@@ -5,7 +5,8 @@ temperature: 0.1
 color: info
 permission:
   edit: allow
-  python3: allow
+  bash:
+    "*": ask
   webfetch: allow
   glob: allow
   read: allow

@@ -2,7 +2,7 @@
 
 <p>A collection of ready-to-use <a href="https://opencode.ai/docs/agents">OpenCode agent definitions</a> organized by context and specialization. Each agent is a markdown file with YAML frontmatter that configures its behavior, permissions, and system prompt.</p>
 
-<p><strong>182 agents</strong> across <strong>42 specialization groups</strong>. All agents are <strong>model-agnostic</strong> and work with Claude, GPT, DeepSeek, or any other LLM provider available in OpenCode.</p>
+<p><strong>181 agents</strong> across <strong>33 specialization groups</strong>. All agents are <strong>model-agnostic</strong> and work with Claude, GPT, DeepSeek, or any other LLM provider available in OpenCode.</p>
 
 <p>Repository: <a href="https://github.com/xscriptor/ai">github.com/xscriptor/ai</a></p>
 
@@ -149,6 +149,8 @@ cp agents/general/*.md ~/.config/opencode/agents/
     <tr><td>Auth Security Specialist</td><td><code>web/security/auth-security-specialist.md</code></td><td>Authentication, authorization, OAuth2, JWT, session management</td></tr>
     <tr><td>AppSec Engineer</td><td><code>web/security/appsec-engineer.md</code></td><td>Secure SDLC: threat modeling, SAST/DAST, cloud security</td></tr>
     <tr><td>Secure Coding</td><td><code>web/security/secure-coding.md</code></td><td>OWASP ASVS, injection prevention, crypto misuse, XSS/SQLI prevention, CWE Top 25</td></tr>
+    <tr><td>WAF Specialist</td><td><code>web/security/waf-specialist.md</code></td><td>WAF configuration, tuning, and bypass testing</td></tr>
+    <tr><td>CDN & Edge Security</td><td><code>web/security/cdn-edge-security.md</code></td><td>CDN and edge computing security across Cloudflare, Fastly, Akamai</td></tr>
   </tbody>
 </table>
 
@@ -238,6 +240,10 @@ cp agents/general/*.md ~/.config/opencode/agents/
     <tr><td>Java Developer</td><td><code>languages/java-developer.md</code></td><td>Java 21+: Spring Boot, JPA, JVM tuning, virtual threads</td></tr>
     <tr><td>Kotlin Developer</td><td><code>languages/kotlin-developer.md</code></td><td>Kotlin: coroutines, Ktor, Exposed, multiplatform, Flow</td></tr>
     <tr><td>Rust Developer</td><td><code>languages/rust-developer.md</code></td><td>Rust: systems, async, Axum, unsafe, FFI, serde</td></tr>
+    <tr><td>VS Code Language Extension</td><td><code>languages/vscode-language-extension.md</code></td><td>TextMate grammars, completions, IntelliSense</td></tr>
+    <tr><td>VS Code LSP Extension</td><td><code>languages/vscode-lsp-extension.md</code></td><td>Language Server Protocol, IntelliSense, diagnostics</td></tr>
+    <tr><td>VS Code Debug Extension</td><td><code>languages/vscode-debug-extension.md</code></td><td>Debug Adapter Protocol, debuggers, debug UI</td></tr>
+    <tr><td>VS Code UI Extension</td><td><code>languages/vscode-ui-extension.md</code></td><td>Webviews, TreeViews, commands, custom editors, status bar</td></tr>
   </tbody>
 </table>
 
@@ -262,6 +268,10 @@ cp agents/general/*.md ~/.config/opencode/agents/
     <tr><td>IR Scripting</td><td><code>systems/ir-scripting.md</code></td><td>IR automation: acquisition scripts, timeline analysis, IOC scanning, orchestration</td></tr>
     <tr><td>Offensive Shell Scripting</td><td><code>systems/offensive-shell-scripting.md</code></td><td>Red team scripting: reverse shells, persistence, data exfiltration, C2 bootstrap, anti-forensics</td></tr>
     <tr><td>Network Security Engineering</td><td><code>systems/network-security.md</code></td><td>Firewalls (nft/iptables), VPN (WireGuard/OpenVPN), IDS/IPS (Suricata/Snort), segmentation</td></tr>
+    <tr><td>Windows Specialist</td><td><code>systems/windows-specialist.md</code></td><td>Windows Server: AD, Group Policy, PowerShell DSC, WSUS</td></tr>
+    <tr><td>Container Orchestration</td><td><code>systems/container-orchestration.md</code></td><td>Nomad, Mesos, Docker Swarm, beyond Kubernetes</td></tr>
+    <tr><td>Storage Engineering</td><td><code>systems/storage-engineering.md</code></td><td>Ceph, NetApp, SAN/NAS, ZFS, NVMe-oF</td></tr>
+    <tr><td>PowerShell Specialist</td><td><code>systems/powershell-specialist.md</code></td><td>PowerShell scripting and automation, Windows, Azure, cross-platform</td></tr>
   </tbody>
 </table>
 
@@ -276,6 +286,8 @@ cp agents/general/*.md ~/.config/opencode/agents/
     <tr><td>Android Developer</td><td><code>mobile/android-developer.md</code></td><td>Jetpack Compose, ViewModel, Room, Hilt, testing</td></tr>
     <tr><td>React Native Developer</td><td><code>mobile/react-native-developer.md</code></td><td>Expo, Expo Router, NativeWind, FlashList, EAS</td></tr>
     <tr><td>Flutter Developer</td><td><code>mobile/flutter-developer.md</code></td><td>Riverpod, GoRouter, drift, BLoC, testing</td></tr>
+    <tr><td>Mobile App Secure Coding</td><td><code>mobile/mobile-app-secure-coding.md</code></td><td>iOS Swift and Android Kotlin secure coding</td></tr>
+    <tr><td>Mobile Malware Analysis</td><td><code>mobile/mobile-malware-analysis.md</code></td><td>Static and dynamic analysis of Android and iOS malware</td></tr>
   </tbody>
 </table>
 
@@ -305,6 +317,8 @@ cp agents/general/*.md ~/.config/opencode/agents/
     <tr><td>GitOps Specialist</td><td><code>cloud/gitops-specialist.md</code></td><td>ArgoCD, Flux, Kustomize, Helm, secrets management</td></tr>
     <tr><td>Service Mesh Specialist</td><td><code>cloud/service-mesh-specialist.md</code></td><td>Istio, Linkerd, Cilium, mTLS, traffic management</td></tr>
     <tr><td>Cloud Architect</td><td><code>cloud/cloud-architect.md</code></td><td>AWS, GCP, Azure comparison, multi-cloud strategy</td></tr>
+    <tr><td>Serverless Security</td><td><code>cloud/serverless-security.md</code></td><td>AWS Lambda, GCP Cloud Functions, Azure Functions security</td></tr>
+    <tr><td>Multi-Cloud Networking</td><td><code>cloud/multi-cloud-networking.md</code></td><td>Connectivity, segmentation, and security across clouds</td></tr>
   </tbody>
 </table>
 
@@ -319,6 +333,7 @@ cp agents/general/*.md ~/.config/opencode/agents/
     <tr><td>Visual Testing Specialist</td><td><code>testing/visual-testing-specialist.md</code></td><td>Chromatic, Percy, snapshot diff, component states</td></tr>
     <tr><td>Performance Testing Specialist</td><td><code>testing/performance-testing-specialist.md</code></td><td>k6, Locust, Gatling, load/spike/soak tests</td></tr>
     <tr><td>Chaos Engineering Specialist</td><td><code>testing/chaos-engineering-specialist.md</code></td><td>Chaos Mesh, Litmus, Gremlin, blast radius control</td></tr>
+    <tr><td>Fuzz Testing</td><td><code>testing/fuzz-testing.md</code></td><td>AFL++, libFuzzer, Honggfuzz, automated vulnerability discovery</td></tr>
   </tbody>
 </table>
 
@@ -451,7 +466,6 @@ cp agents/general/*.md ~/.config/opencode/agents/
   <tbody>
     <tr><td>Threat Hunting</td><td>Hypothesis-driven hunts across endpoints, network, cloud (Windows/Linux/macOS)</td></tr>
     <tr><td>Incident Response</td><td>NIST 800-61 methodology, containment, eradication, IR report generation</td></tr>
-    <tr><td>Forensic Analysis</td><td>Memory/disk/mobile/cloud forensics, timeline analysis, anti-forensics detection</td></tr>
     <tr><td>Detection Engineering</td><td>Sigma, KQL, YARA, Splunk rules, behavioral detection, Atomic Red Team</td></tr>
     <tr><td>Threat Intelligence</td><td>MITRE ATT&CK mapping, IoC management, YARA, MISP/OpenCTI, TTP tracking, threat reports</td></tr>
     <tr><td>Vulnerability Management</td><td>Nessus/OpenVAS, CVSS/EPSS prioritization, patching SLAs, metrics, verification</td></tr>
@@ -468,6 +482,7 @@ cp agents/general/*.md ~/.config/opencode/agents/
   <thead><tr><th>Agent</th><th>Description</th></tr></thead>
   <tbody>
     <tr><td>Purple Team</td><td>Atomic Red Team, adversary emulation, detection gap analysis, Sigma rule writing, Caldera/Infection Monkey</td></tr>
+    <tr><td>Purple Team Automation</td><td>Emulation campaigns and detection validation at scale</td></tr>
   </tbody>
 </table>
 
@@ -493,6 +508,9 @@ cp agents/general/*.md ~/.config/opencode/agents/
     <tr><td>Content Editor</td><td><code>content/content-editor.md</code></td><td>6-pass editorial review: structure, clarity, grammar, consistency, inclusivity, accuracy</td></tr>
     <tr><td>Content Reviser</td><td><code>content/content-reviser.md</code></td><td>3-level revision: light (grammar), medium (structure), heavy (restructure)</td></tr>
     <tr><td>Translator</td><td><code>content/translator.md</code></td><td>Technical translation: format preservation, locale-specific style, terminology management</td></tr>
+    <tr><td>Markdown Architect</td><td><code>content/markdown-architect.md</code></td><td>Documentation structure, organization, cross-referencing</td></tr>
+    <tr><td>Markdown Editor</td><td><code>content/markdown-editor.md</code></td><td>django-markdownx, markdown editors, preview rendering</td></tr>
+    <tr><td>Markdown HTML</td><td><code>content/markdown-html.md</code></td><td>Markdown to HTML conversion, rendering, styling</td></tr>
   </tbody>
 </table>
 
@@ -504,6 +522,8 @@ cp agents/general/*.md ~/.config/opencode/agents/
   <thead><tr><th>Agent</th><th>File</th><th>Description</th></tr></thead>
   <tbody>
     <tr><td>Observability Specialist</td><td><code>observability/observability-specialist.md</code></td><td>OpenTelemetry, PromQL, dashboards, alerting, tracing</td></tr>
+    <tr><td>OpenTelemetry Specialist</td><td><code>observability/opentelemetry-specialist.md</code></td><td>Instrumentation, sampling, exporters, custom collector config</td></tr>
+    <tr><td>Log Management Architect</td><td><code>observability/log-management-architect.md</code></td><td>Collection, shipping, storage, compliance, retention</td></tr>
   </tbody>
 </table>
 
@@ -517,6 +537,10 @@ cp agents/general/*.md ~/.config/opencode/agents/
     <tr><td>SOC 2 Specialist</td><td><code>compliance/soc2-specialist.md</code></td><td>SOC 2 trust criteria, evidence collection, audit readiness</td></tr>
     <tr><td>GDPR Specialist</td><td><code>compliance/gdpr-specialist.md</code></td><td>Data subject rights, consent management, breach notification</td></tr>
     <tr><td>GRC Automation</td><td><code>compliance/grc-automation.md</code></td><td>Risk assessment, policy management, vendor risk, evidence collection, compliance calendar</td></tr>
+    <tr><td>PCI DSS Specialist</td><td><code>compliance/pci-dss-specialist.md</code></td><td>12 requirements, SAQ scoping, QSA readiness</td></tr>
+    <tr><td>HIPAA Specialist</td><td><code>compliance/hipaa-specialist.md</code></td><td>Privacy Rule, Security Rule, Breach Notification</td></tr>
+    <tr><td>FedRAMP Specialist</td><td><code>compliance/fedramp-specialist.md</code></td><td>Security assessment and authorization for cloud services</td></tr>
+    <tr><td>SOX / ITGC Specialist</td><td><code>compliance/sox-itgc-specialist.md</code></td><td>Sarbanes-Oxley IT General Controls</td></tr>
   </tbody>
 </table>
 
@@ -525,12 +549,17 @@ cp agents/general/*.md ~/.config/opencode/agents/
 <p>Repository: <a href="https://github.com/xscriptor/ai">github.com/xscriptor/ai</a><br>
 Agents: <code>agents/</code> | Skills: <code>skills/</code> | Scripts: <code>scripts/</code></p>
 
-<p>All 182 agents can be installed via script, npx, or manually. Works on macOS, Linux, and Windows WSL.</p>
+<p>All 181 agents (plus 24 senior agents and 21 skills) can be installed via script, npx, or manually. The installers copy to <code>~/.config/opencode/agents/</code> and <code>~/.config/opencode/skills/</code> where OpenCode discovers them automatically.</p>
 
 <h3>Option 1: npx (No Install)</h3>
 
-<pre><code># All 154 agents to OpenCode
+<pre><code># Everything (agents + senior + skills)
 npx @xscriptor/ai-agents
+
+# Selective
+npx @xscriptor/ai-agents --agents
+npx @xscriptor/ai-agents --senior
+npx @xscriptor/ai-agents --skills
 
 # Specific groups
 npx @xscriptor/ai-agents --groups general,web/security,languages
@@ -541,11 +570,11 @@ npx @xscriptor/ai-agents --anthropic
 # To project
 npx @xscriptor/ai-agents --project</code></pre>
 
-<h3>All 154 Agents by Group</h3>
+<h3>All 181 Specialized Agents by Group</h3>
 
 <ul>
   <li>  <strong>General</strong> (21): code-reviewer, security-auditor, docs-writer, api-docs, refactor-agent, db-migrator, test-writer, dependency-auditor, performance-analyzer, pr-manager, release-manager, agent-creator, security-researcher, tech-researcher, research-lead, scientific-researcher, literary-researcher, cultural-researcher, psychology-researcher, trends-researcher, mega-researcher</li>
-  <li><strong>Web / Security</strong> (6): web-security-auditor, api-security-specialist, auth-security-specialist, appsec-engineer, secure-coding, waf-specialist, cdn-edge-security</li>
+  <li><strong>Web / Security</strong> (7): web-security-auditor, api-security-specialist, auth-security-specialist, appsec-engineer, secure-coding, waf-specialist, cdn-edge-security</li>
   <li><strong>Web / Architecture</strong> (5): software-architect, system-designer, scalability-specialist, reliability-specialist, zero-trust-architect</li>
   <li><strong>Web / Frontend</strong> (7): react-specialist, vue-specialist, css-ui-specialist, frontend-performance, accessibility-specialist, nextjs-developer, angular-developer</li>
   <li><strong>Web / Backend</strong> (7): api-designer, database-specialist, microservices-architect, devops-specialist, message-queue-specialist, caching-specialist, database-security</li>
@@ -553,22 +582,22 @@ npx @xscriptor/ai-agents --project</code></pre>
   <li><strong>Mobile</strong> (6): ios-developer, android-developer, react-native-developer, flutter-developer, mobile-app-secure-coding, mobile-malware-analysis</li>
   <li><strong>Data &amp; ML</strong> (4): data-engineer, ml-engineer, mlops-specialist, data-scientist</li>
   <li><strong>Cloud</strong> (7): kubernetes-specialist, sre-specialist, gitops-specialist, service-mesh-specialist, cloud-architect, serverless-security, multi-cloud-networking</li>
-  <li><strong>Testing</strong> (5): e2e-testing, visual-testing, performance-testing, chaos-engineering, fuzz-testing</li>
+  <li><strong>Testing</strong> (5): e2e-testing-specialist, visual-testing-specialist, performance-testing-specialist, chaos-engineering-specialist, fuzz-testing</li>
   <li><strong>GraphQL</strong> (1): graphql-specialist</li>
-  <li><strong>Embedded</strong> (4): c-cpp-developer, embedded-rust-developer, iot-ot-security</li>
+  <li><strong>Embedded</strong> (3): c-cpp-developer, embedded-rust-developer, iot-ot-security</li>
   <li><strong>Game Dev</strong> (2): unity-developer, unreal-developer</li>
   <li><strong>Security / Recon</strong> (3): attack-surface-recon, wireless-security, osint-threat-research</li>
-  <li><strong>Security / Web Pentest</strong> (10): web-vulnerability-hunter, api-pentester, auth-bypass-specialist, server-side-exploitation, cloud-security-assessment, waf-bypass-specialist, browser-security, container-security, supply-chain-security, devsecops-pipeline, pentest-automation, bug-bounty-hunter, cloud-posture</li>
+  <li><strong>Security / Web Pentest</strong> (13): web-vulnerability-hunter, api-pentester, auth-bypass-specialist, server-side-exploitation, cloud-security-assessment, waf-bypass-specialist, browser-security, container-security, supply-chain-security, devsecops-pipeline, pentest-automation, bug-bounty-hunter, cloud-posture</li>
   <li><strong>Security / Mobile Pentest</strong> (3): mobile-app-pentester, ios-security-researcher, android-security-researcher</li>
-  <li><strong>Security / Desktop</strong> (10): windows-exploit-dev, linux-priv-esc, macos-security-research, binary-exploitation, python-application-security, desktop-threat-hunting, reverse-engineering, active-directory-security, exploit-development</li>
+  <li><strong>Security / Desktop</strong> (9): windows-exploit-development, linux-privilege-escalation, macos-security-research, binary-exploitation, python-application-security, desktop-threat-hunting, reverse-engineering, active-directory-security, exploit-development</li>
   <li><strong>Security / Red Team</strong> (6): adversary-simulation, social-engineering, malware-analysis, physical-security-assessment, phishing-assessment, c2-framework</li>
-  <li><strong>Security / Blue Team</strong> (7): threat-hunting, incident-response, forensic-analysis, detection-engineering, threat-intelligence, vulnerability-management, soc-automation, digital-forensics</li>
+  <li><strong>Security / Blue Team</strong> (7): threat-hunting, incident-response, detection-engineering, threat-intelligence, vulnerability-management, soc-automation, digital-forensics</li>
   <li><strong>Security / Purple Team</strong> (2): purple-team, purple-team-automation</li>
   <li><strong>Security / AI &amp; ML</strong> (1): ai-ml-security</li>
   <li>  <strong>Content</strong> (7): technical-writer, content-editor, content-reviser, translator, markdown-architect, markdown-html, markdown-editor</li>
   <li><strong>Observability</strong> (3): observability-specialist, opentelemetry-specialist, log-management-architect</li>
-  <li><strong>Compliance</strong> (8): soc2-specialist, gdpr-specialist, grc-automation, pci-dss-specialist, hipaa-specialist, fedramp-specialist, sox-itgc-specialist</li>
-  <li><strong>Systems</strong> (12): bash-zsh-specialist, linux-specialist, macos-specialist, linux-hardening, macos-hardening, ir-scripting, offensive-shell-scripting, network-security, windows-specialist, container-orchestration, storage-engineering</li>
+  <li><strong>Compliance</strong> (7): soc2-specialist, gdpr-specialist, grc-automation, pci-dss-specialist, hipaa-specialist, fedramp-specialist, sox-itgc-specialist</li>
+  <li><strong>Systems</strong> (11): bash-zsh-specialist, linux-specialist, macos-specialist, linux-hardening, macos-hardening, ir-scripting, offensive-shell-scripting, network-security, windows-specialist, container-orchestration, storage-engineering</li>
   <li><strong>Privacy Engineering</strong> (3): data-mapping, consent-anonymization, privacy-dsar-ccpa</li>
   <li><strong>Blockchain / Web3</strong> (2): smart-contract-auditor, defi-wallet-bridge</li>
   <li><strong>Telecom</strong> (1): telecom-security</li>
@@ -619,8 +648,13 @@ curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/scripts/install-a
 <pre><code>git clone https://github.com/xscriptor/ai.git
 cd ai
 
-# All 154 agents
+# Everything (agents + senior + skills)
 ./scripts/install-agents.sh
+
+# Selective
+./scripts/install-agents.sh --agents
+./scripts/install-agents.sh --senior
+./scripts/install-agents.sh --skills
 
 # Specific groups
 ./scripts/install-agents.sh --groups general,web/security
@@ -634,7 +668,9 @@ cd ai
 <h3>Option 4: Manual Copy</h3>
 
 <pre><code>cp agents/general/code-reviewer.md ~/.config/opencode/agents/
-cp agents/web/security/web-security-auditor.md ~/.config/opencode/agents/</code></pre>
+cp agents/web/security/web-security-auditor.md ~/.config/opencode/agents/
+cp senior/agents/web/senior-fullstack.md ~/.config/opencode/agents/
+cp senior/skills/architecture/SKILL.md ~/.config/opencode/skills/architecture/</code></pre>
 
 <h2>Related Resources</h2>
 
