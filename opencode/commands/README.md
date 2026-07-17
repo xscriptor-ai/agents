@@ -24,10 +24,10 @@
 npx @xscriptor/ai-agents --commands
 
 # Via local script
-./scripts/install-agents.sh --commands
+./opencode/scripts/install-agents.sh --commands
 
 # Or install everything
-./scripts/install-agents.sh</code></pre>
+./opencode/scripts/install-agents.sh</code></pre>
 
 <h2 align="center">Usage</h2>
 

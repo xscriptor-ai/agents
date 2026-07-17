@@ -640,8 +640,8 @@ npx @xscriptor/ai-agents --project</code></pre>
 
 <h3>Option 2: Remote Script (No Clone)</h3>
 
-<pre><code>curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/scripts/install-agents.sh | bash
-curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/scripts/install-agents.sh | bash -s -- --project</code></pre>
+<pre><code>curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/opencode/scripts/install-agents.sh | bash
+curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/opencode/scripts/install-agents.sh | bash -s -- --project</code></pre>
 
 <h3>Option 3: Clone and Install</h3>
 
@@ -649,21 +649,21 @@ curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/scripts/install-a
 cd ai
 
 # Everything (agents + senior + skills)
-./scripts/install-agents.sh
+./opencode/scripts/install-agents.sh
 
 # Selective
-./scripts/install-agents.sh --agents
-./scripts/install-agents.sh --senior
-./scripts/install-agents.sh --skills
+./opencode/scripts/install-agents.sh --agents
+./opencode/scripts/install-agents.sh --senior
+./opencode/scripts/install-agents.sh --skills
 
 # Specific groups
-./scripts/install-agents.sh --groups general,web/security
+./opencode/scripts/install-agents.sh --groups general,web/security
 
 # Interactive
-./scripts/install-agents.sh --interactive
+./opencode/scripts/install-agents.sh --interactive
 
 # Project-level
-./scripts/install-agents.sh --project</code></pre>
+./opencode/scripts/install-agents.sh --project</code></pre>
 
 <h3>Option 4: Manual Copy</h3>
 

@@ -8,8 +8,8 @@
 #   senior/skills/    18 deep-reference skills
 #
 # Remote:
-#   curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/scripts/install-agents.sh | bash
-#   curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/scripts/install-agents.sh | bash -s -- --project
+#   curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/opencode/scripts/install-agents.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/opencode/scripts/install-agents.sh | bash -s -- --project
 #
 # Local:
 #   ./install-agents.sh                    # Everything (agents + senior + skills + commands)

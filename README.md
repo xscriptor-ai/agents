@@ -10,13 +10,13 @@ npm: <code>npx @xscriptor/ai-agents</code></p>
 <table align="center">
   <thead><tr><th>Path</th><th>Content</th></tr></thead>
   <tbody>
-    <tr><td><a href="agents/"><code>agents/</code></a></td><td>181 specialized agents (33 groups)</td></tr>
-    <tr><td><a href="senior/agents/"><code>senior/agents/</code></a></td><td>24 consolidated senior agents (16 ecosystems)</td></tr>
-    <tr><td><a href="skills/"><code>skills/</code></a></td><td>3 project skills (xscriptor, devx, samurai)</td></tr>
-    <tr><td><a href="senior/skills/"><code>senior/skills/</code></a></td><td>18 deep-reference skills</td></tr>
-    <tr><td><a href="scripts/"><code>scripts/</code></a></td><td>8 utility scripts (install, validate, generate, etc.)</td></tr>
-    <tr><td><a href="packages/ai-agents/"><code>packages/ai-agents/</code></a></td><td>npm package @xscriptor/ai-agents</td></tr>
-    <tr><td><a href="commands/"><code>commands/</code></a></td><td>8 OpenCode commands (/review, /audit, /docs, /arch, /test, /deploy, /refactor, /design)</td></tr>
+    <tr><td><a href="opencode/agents/"><code>agents/</code></a></td><td>181 specialized agents (33 groups)</td></tr>
+    <tr><td><a href="opencode/senior/agents/"><code>senior/agents/</code></a></td><td>24 consolidated senior agents (16 ecosystems)</td></tr>
+    <tr><td><a href="opencode/skills/"><code>skills/</code></a></td><td>3 project skills (xscriptor, devx, samurai)</td></tr>
+    <tr><td><a href="opencode/senior/skills/"><code>senior/skills/</code></a></td><td>18 deep-reference skills</td></tr>
+    <tr><td><a href="opencode/scripts/"><code>scripts/</code></a></td><td>8 utility scripts (install, validate, generate, etc.)</td></tr>
+    <tr><td><a href="opencode/packages/ai-agents/"><code>packages/ai-agents/</code></a></td><td>npm package @xscriptor/ai-agents</td></tr>
+    <tr><td><a href="opencode/commands/"><code>commands/</code></a></td><td>8 OpenCode commands (/review, /audit, /docs, /arch, /test, /deploy, /refactor, /design)</td></tr>
   </tbody>
 </table>
 
@@ -49,16 +49,16 @@ npx @xscriptor/ai-agents --project     # current project
 # Clone and install all
 git clone https://github.com/xscriptor/ai.git
 cd ai
-./scripts/install-agents.sh
+./opencode/scripts/install-agents.sh
 
 # Selective with local script
-./scripts/install-agents.sh --agents
-./scripts/install-agents.sh --senior
-./scripts/install-agents.sh --skills
-./scripts/install-agents.sh --commands
+./opencode/scripts/install-agents.sh --agents
+./opencode/scripts/install-agents.sh --senior
+./opencode/scripts/install-agents.sh --skills
+./opencode/scripts/install-agents.sh --commands
 
 # Remote (installs everything by default)
-curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/scripts/install-agents.sh | bash</code></pre>
+curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/opencode/scripts/install-agents.sh | bash</code></pre>
 
 <div align="center">
 <h2>X</h2>

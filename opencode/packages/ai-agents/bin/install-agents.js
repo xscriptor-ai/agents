@@ -7,7 +7,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PKG_DIR = join(__dirname, "..");
-const REPO_DIR = join(PKG_DIR, "..", "..");
+const REPO_DIR = join(PKG_DIR, "..", "..", "..");
 const REPO_AGENTS = join(REPO_DIR, "agents");
 const REPO_SENIOR = join(REPO_DIR, "senior/agents");
 const REPO_SKILLS = join(REPO_DIR, "skills");

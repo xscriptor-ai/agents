@@ -41,7 +41,7 @@ and re-run the converter.
 
 ## Why this directory exists
 
-The repo is written in **OpenCode format**. The installer `scripts/install-agents.sh` (and the
+The repo is written in **OpenCode format**. The installer `opencode/scripts/install-agents.sh` (and the
 npm package) have an `--anthropic` flag, but they only **copy files without translating
 frontmatter**, and that frontmatter is invalid in Claude Code: it lacks the required `name` field,
 and `mode`, `temperature` and the `permission:` block do not exist in its schema.

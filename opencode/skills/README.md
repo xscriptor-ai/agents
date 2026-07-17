@@ -48,7 +48,7 @@ npx @xscriptor/ai-agents --skills
 # Clone and install all
 git clone https://github.com/xscriptor/ai.git
 cd ai
-./scripts/install-agents.sh</code></pre>
+./opencode/scripts/install-agents.sh</code></pre>
 
 <p>The install script copies all 3 project skills and 18 senior skills to <code>~/.config/opencode/skills/</code>.</p>
 
