@@ -4,7 +4,7 @@
 
 <p><strong>181 agents</strong> across <strong>33 specialization groups</strong>. All agents are <strong>model-agnostic</strong> and work with Claude, GPT, DeepSeek, or any other LLM provider available in OpenCode.</p>
 
-<p>Repository: <a href="https://github.com/xscriptor/ai">github.com/xscriptor/ai</a></p>
+<p>Repository: <a href="https://github.com/xscriptor-ai/agents">github.com/xscriptor-ai/agents</a></p>
 
 <h2>Table of Contents</h2>
 
@@ -546,7 +546,7 @@ cp agents/general/*.md ~/.config/opencode/agents/
 
 <h2 id="installation">Installation</h2>
 
-<p>Repository: <a href="https://github.com/xscriptor/ai">github.com/xscriptor/ai</a><br>
+<p>Repository: <a href="https://github.com/xscriptor-ai/agents">github.com/xscriptor-ai/agents</a><br>
 Agents: <code>agents/</code> | Skills: <code>skills/</code> | Scripts: <code>scripts/</code></p>
 
 <p>All 181 agents (plus 24 senior agents and 21 skills) can be installed via script, npx, or manually. The installers copy to <code>~/.config/opencode/agents/</code> and <code>~/.config/opencode/skills/</code> where OpenCode discovers them automatically.</p>
@@ -640,12 +640,12 @@ npx @xscriptor/ai-agents --project</code></pre>
 
 <h3>Option 2: Remote Script (No Clone)</h3>
 
-<pre><code>curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/scripts/install-agents.sh | bash
-curl -fsSL https://raw.githubusercontent.com/xscriptor/ai/main/scripts/install-agents.sh | bash -s -- --project</code></pre>
+<pre><code>curl -fsSL https://raw.githubusercontent.com/xscriptor-ai/scripts/main/install-agents.sh | bash
+curl -fsSL https://raw.githubusercontent.com/xscriptor-ai/scripts/main/install-agents.sh | bash -s -- --project</code></pre>
 
 <h3>Option 3: Clone and Install</h3>
 
-<pre><code>git clone https://github.com/xscriptor/ai.git
+<pre><code>git clone https://github.com/xscriptor-ai/agents.git
 cd ai
 
 # Everything (agents + senior + skills)
@@ -678,7 +678,7 @@ cp senior/skills/architecture/SKILL.md ~/.config/opencode/skills/architecture/</
   <li><a href="https://opencode.ai/docs/agents">OpenCode Agents Documentation</a></li>
   <li><a href="https://opencode.ai/docs/permissions">OpenCode Permissions Guide</a></li>
   <li><a href="../skills/">Skills</a></li>
-  <li><a href="https://github.com/xscriptor/ai">github.com/xscriptor/ai</a></li>
+  <li><a href="https://github.com/xscriptor-ai/agents">github.com/xscriptor-ai/agents</a></li>
 </ul>
 
 <div id="x" align="center">

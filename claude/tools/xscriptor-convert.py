@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Convert xscriptor/ai (OpenCode format) -> Claude Code format in ~/.claude/."""
+"""Convert xscriptor-ai/agents (OpenCode format) -> Claude Code format in ~/.claude/."""
 import os, re, sys, shutil, pathlib
 import yaml
 
@@ -11,7 +11,7 @@ DST = pathlib.Path(_arg("--dst", "~/.claude")).expanduser()
 DRY = "--dry" in sys.argv
 
 if not (SRC / "agents").is_dir():
-    sys.exit(f"error: {SRC} does not look like a clone of github.com/xscriptor/ai")
+    sys.exit(f"error: {SRC} does not look like a clone of github.com/xscriptor-ai/agents")
 
 COLOR_MAP = {
     "error": "red", "warning": "orange", "info": "blue", "success": "green",

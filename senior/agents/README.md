@@ -28,7 +28,7 @@
 
 <h2>Usage</h2>
 
-<p>See <a href="https://github.com/xscriptor/ai">github.com/xscriptor/ai</a> for installation and usage instructions.</p>
+<p>See <a href="https://github.com/xscriptor-ai/agents">github.com/xscriptor-ai/agents</a> for installation and usage instructions.</p>
 
 <h2>Related</h2>
 
