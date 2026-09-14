@@ -8,7 +8,6 @@ permission:
   webfetch: allow
   bash:
     "*": ask
-    "*": ask
   glob: allow
   read: allow
 ---

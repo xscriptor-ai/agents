@@ -12,7 +12,6 @@ permission:
     "forge *": allow
     "cast *": allow
     "grep *": allow
-  webfetch: allow
   glob: allow
   grep: allow
   read: allow
