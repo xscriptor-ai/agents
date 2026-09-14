@@ -29,22 +29,28 @@ Uninstall agents: `rm -rf ~/.claude/agents/xscriptor` (everything hangs off that
 
 ## Regenerate
 
-`claude/` is not edited by hand — it is generated from the OpenCode sources in the repo:
+`claude/` is not edited by hand — it is generated from the OpenCode sources in the
+`xscriptor-ai/agents` repo (agents) and the `xscriptor-ai/skills` repo (skills + commands):
 
 ```bash
+# From a clone of xscriptor-ai/agents, with xscriptor-ai/skills as a sibling
 python3 claude/tools/xscriptor-convert.py --src . --dst ./claude --dry   # preview
 python3 claude/tools/xscriptor-convert.py --src . --dst ./claude         # apply
+
+# Explicit paths if the repos are not siblings
+python3 claude/tools/xscriptor-convert.py --src . --skills-src ../skills --dst ./claude
 ```
 
 Idempotent. Requires `pyyaml`. If you change an agent, edit it in `agents/` or `senior/agents/`
-and re-run the converter.
+and re-run the converter. If you change a skill or command, edit it in the `skills` repo and
+re-run the converter pointing `--skills-src` at that clone.
 
 ## Why this directory exists
 
-The repo is written in **OpenCode format**. The installer `scripts/install-agents.sh` (and the
-npm package) have an `--anthropic` flag, but they only **copy files without translating
-frontmatter**, and that frontmatter is invalid in Claude Code: it lacks the required `name` field,
-and `mode`, `temperature` and the `permission:` block do not exist in its schema.
+The sources are written in **OpenCode format**. `scripts/install-agents.sh` is OpenCode-only, and
+copying the raw sources would be invalid in Claude Code: they lack the required `name` field, and
+`mode`, `temperature` and the `permission:` block do not exist in its schema. The npm package
+(`npx @xscriptor/ai-agents --anthropic`) installs this generated mirror instead.
 
 ## OpenCode → Claude Code differences
 

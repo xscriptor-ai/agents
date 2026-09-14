@@ -645,39 +645,43 @@ curl -fsSL https://raw.githubusercontent.com/xscriptor-ai/scripts/main/install-a
 
 <h3>Option 3: Clone and Install</h3>
 
-<pre><code>git clone https://github.com/xscriptor-ai/agents.git
-cd ai
+<pre><code>git clone https://github.com/xscriptor-ai/scripts.git
+git clone https://github.com/xscriptor-ai/agents.git
+git clone https://github.com/xscriptor-ai/skills.git
+cd scripts
 
 # Everything (agents + senior + skills)
-./scripts/install-agents.sh
+./install-agents.sh
 
 # Selective
-./scripts/install-agents.sh --agents
-./scripts/install-agents.sh --senior
-./scripts/install-agents.sh --skills
+./install-agents.sh --agents
+./install-agents.sh --senior
+./install-agents.sh --skills
 
 # Specific groups
-./scripts/install-agents.sh --groups general,web/security
+./install-agents.sh --groups general,web/security
 
 # Interactive
-./scripts/install-agents.sh --interactive
+./install-agents.sh --interactive
 
 # Project-level
-./scripts/install-agents.sh --project</code></pre>
+./install-agents.sh --project</code></pre>
 
 <h3>Option 4: Manual Copy</h3>
 
 <pre><code>cp agents/general/code-reviewer.md ~/.config/opencode/agents/
 cp agents/web/security/web-security-auditor.md ~/.config/opencode/agents/
 cp senior/agents/web/senior-fullstack.md ~/.config/opencode/agents/
-cp senior/skills/architecture/SKILL.md ~/.config/opencode/skills/architecture/</code></pre>
+
+# Skills live in xscriptor-ai/skills
+cp ../skills/senior/skills/architecture/SKILL.md ~/.config/opencode/skills/architecture/</code></pre>
 
 <h2>Related Resources</h2>
 
 <ul>
   <li><a href="https://opencode.ai/docs/agents">OpenCode Agents Documentation</a></li>
   <li><a href="https://opencode.ai/docs/permissions">OpenCode Permissions Guide</a></li>
-  <li><a href="../skills/">Skills</a></li>
+  <li><a href="https://github.com/xscriptor-ai/skills">Skills</a></li>
   <li><a href="https://github.com/xscriptor-ai/agents">github.com/xscriptor-ai/agents</a></li>
 </ul>
 
