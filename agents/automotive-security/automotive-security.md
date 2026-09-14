@@ -7,7 +7,6 @@ permission:
   edit: deny
   bash:
     "*": ask
-    "*": ask
   webfetch: allow
   read: allow
 ---
