@@ -252,12 +252,12 @@
 <pre><code># Copy all senior agents
 cp -r senior/agents/* ~/.config/opencode/agents/
 
-# Copy all senior skills
-cp -r senior/skills/* ~/.config/opencode/skills/
+# Senior skills live in xscriptor-ai/skills
+cp -r ../skills/senior/skills/* ~/.config/opencode/skills/
 
 # Or install specific ecosystem
 cp senior/agents/typescript/*.md ~/.config/opencode/agents/
-cp senior/skills/typescript/SKILL.md ~/.config/opencode/skills/</code></pre>
+cp ../skills/senior/skills/typescript/SKILL.md ~/.config/opencode/skills/</code></pre>
 
 <h2>Usage</h2>
 

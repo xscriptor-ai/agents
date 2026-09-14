@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Convert xscriptor-ai/agents (OpenCode format) -> Claude Code format in ~/.claude/."""
+"""Convert xscriptor-ai/agents + xscriptor-ai/skills (OpenCode format) -> Claude Code format in ~/.claude/.
+
+Sources:
+  --src         agents repo root (needs agents/ and senior/agents/)
+  --skills-src  skills repo root (needs skills/, senior/skills/ and commands/)
+                default: sibling ../skills of --src, else the same --src (legacy monorepo)
+"""
 import os, re, sys, shutil, pathlib
 import yaml
 
@@ -7,11 +13,25 @@ def _arg(flag, default):
     return sys.argv[sys.argv.index(flag) + 1] if flag in sys.argv else default
 
 SRC = pathlib.Path(_arg("--src", "./ai")).expanduser().resolve()
+SKILLS_ARG = _arg("--skills-src", None)
 DST = pathlib.Path(_arg("--dst", "~/.claude")).expanduser()
 DRY = "--dry" in sys.argv
 
 if not (SRC / "agents").is_dir():
     sys.exit(f"error: {SRC} does not look like a clone of github.com/xscriptor-ai/agents")
+
+def find_skills_src():
+    if SKILLS_ARG:
+        return pathlib.Path(SKILLS_ARG).expanduser().resolve()
+    sibling = SRC.parent / "skills"
+    if (sibling / "senior" / "skills").is_dir():
+        return sibling
+    return SRC
+
+SKILLS_SRC = find_skills_src()
+if not (SKILLS_SRC / "senior" / "skills").is_dir():
+    sys.exit(f"error: {SKILLS_SRC} does not contain skills/senior skills; "
+             "pass --skills-src /path/to/xscriptor-ai/skills")
 
 COLOR_MAP = {
     "error": "red", "warning": "orange", "info": "blue", "success": "green",
@@ -151,12 +171,12 @@ def main():
     if dups:
         report["notes"].append(f"DUPLICATE AGENT NAMES: {dups}")
 
-    for p in sorted((SRC / "senior/skills").glob("*/SKILL.md")):
+    for p in sorted((SKILLS_SRC / "senior/skills").glob("*/SKILL.md")):
         convert_skill(p.parent, "senior-" + p.parent.name)
-    for p in sorted((SRC / "skills").rglob("SKILL.md")):
+    for p in sorted((SKILLS_SRC / "skills").rglob("SKILL.md")):
         convert_skill(p.parent, p.parent.name)
 
-    for p in sorted((SRC / "commands").glob("*.md")):
+    for p in sorted((SKILLS_SRC / "commands").glob("*.md")):
         if p.name == "README.md":
             continue
         convert_command(p)
