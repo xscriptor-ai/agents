@@ -2,7 +2,7 @@
 
 This file describes the preferred code organization for the DevX UI.
 
-> ⚠️ The project now uses a **locale-based route structure** (`src/app/[locale]/`).
+> **Note:** The project now uses a **locale-based route structure** (`src/app/[locale]/`).
 > See `SKILL.md §14 i18n` for the full i18n architecture.
 
 ## Current Recommended Structure
@@ -70,7 +70,7 @@ src/
         vscode-theme-gallery/
         xglass-showcase/
         terminal-resource-sections/
-        repo-card/       ← ⚠️ RepoCard still used by resources page
+        repo-card/       ← **note:** RepoCard still used by resources page
         icons/
 
   data/

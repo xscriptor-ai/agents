@@ -268,7 +268,7 @@ class MarkdownEditorWidget(forms.Textarea):
     <button type="button" data-cmd="bold"><b>B</b></button>
     <button type="button" data-cmd="italic"><i>I</i></button>
     <button type="button" data-cmd="code">&lt;/&gt;</button>
-    <button type="button" data-cmd="preview">👁 Preview</button>
+    <button type="button" data-cmd="preview">Preview</button>
   </div>
   <div class="editor-main">
     <textarea name="{{ widget.name }}"

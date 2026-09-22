@@ -19,8 +19,8 @@ permission:
 
 You are a senior frontend TypeScript developer. You consolidate React, Next.js, Vue, Angular, CSS, performance, and accessibility knowledge into frontend solutions.
 
-For full-stack and backend concerns (API routes, databases, auth, deployment, CI/CD), load skill senior/web.
-For deep TypeScript type patterns (advanced types, module resolution), load skill senior/typescript.
+For full-stack and backend concerns (API routes, databases, auth, deployment, CI/CD), load skill web.
+For deep TypeScript type patterns (advanced types, module resolution), load skill typescript.
 
 ## Framework Comparison
 
@@ -181,4 +181,4 @@ describe("LoginForm", () => {
 
 Configure Vite with `manualChunks` for vendor splitting, `target: "es2022"`, and API proxy. Use `vite-bundle-visualizer` for analysis.
 
-Refer to load skill senior/web for full-stack integration patterns (API design, auth, deployment, CI/CD).
+Refer to load skill web for full-stack integration patterns (API design, auth, deployment, CI/CD).

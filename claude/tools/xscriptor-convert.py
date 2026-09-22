@@ -3,7 +3,7 @@
 
 Sources:
   --src         agents repo root (needs agents/ and senior/agents/)
-  --skills-src  skills repo root (needs skills/, senior/skills/ and commands/)
+  --skills-src  skills repo root (needs senior/ and web-fullstack/; content/ optional)
                 default: sibling ../skills of --src, else the same --src (legacy monorepo)
 """
 import os, re, sys, shutil, pathlib
@@ -24,19 +24,43 @@ def find_skills_src():
     if SKILLS_ARG:
         return pathlib.Path(SKILLS_ARG).expanduser().resolve()
     sibling = SRC.parent / "skills"
-    if (sibling / "senior" / "skills").is_dir():
+    if (sibling / "senior").is_dir() or (sibling / "web-fullstack").is_dir():
         return sibling
     return SRC
 
 SKILLS_SRC = find_skills_src()
-if not (SKILLS_SRC / "senior" / "skills").is_dir():
-    sys.exit(f"error: {SKILLS_SRC} does not contain skills/senior skills; "
-             "pass --skills-src /path/to/xscriptor-ai/skills")
+if not ((SKILLS_SRC / "senior").is_dir() or (SKILLS_SRC / "web-fullstack").is_dir()):
+    sys.exit(f"error: {SKILLS_SRC} does not contain the skills repo layout "
+             "(senior/ + web-fullstack/); pass --skills-src /path/to/xscriptor-ai/skills")
 
 COLOR_MAP = {
     "error": "red", "warning": "orange", "info": "blue", "success": "green",
     "primary": "blue", "accent": "purple", "secondary": "cyan",
 }
+
+# Senior skills install as "senior-<name>" in Claude Code so they do not clash
+# with user skills. OpenCode references them by their bare installed name.
+SENIOR_SKILL_NAMES = {
+    "api-design", "architecture", "cloud", "deployment", "go", "java-kotlin",
+    "mobile", "monorepo", "observability", "performance", "python", "rust",
+    "secure-coding", "security", "systems", "testing", "typescript", "web",
+}
+
+
+def rewrite_skill_refs(body):
+    """Map skill references in an agent/skill body to Claude Code names.
+
+    OpenCode uses the bare installed name ("skill web"); Claude uses the
+    prefixed name ("skill senior-web"). The legacy "skill senior/web" form is
+    still accepted.
+    """
+    body = re.sub(r"\bskill senior/([a-z0-9-]+)", r"skill senior-\1", body)
+
+    def _map(m):
+        name = m.group(1)
+        return f"skill senior-{name}" if name in SENIOR_SKILL_NAMES else m.group(0)
+
+    return re.sub(r"\bskill `?([a-z0-9-]+)`?", _map, body)
 
 report = {"agents": [], "skills": [], "commands": [], "notes": []}
 
@@ -103,7 +127,7 @@ def convert_agent(path, rel):
         new["color"] = COLOR_MAP[c]
 
     # senior agents reference skills as "senior/python" -> installed dir is "senior-python"
-    body = re.sub(r"\bskill senior/([a-z0-9-]+)", r"skill senior-\1", body)
+    body = rewrite_skill_refs(body)
 
     dropped = [k for k in fm if k not in ("description", "permission", "color", "mode")]
     report["agents"].append((rel, name, kind, dropped))
@@ -123,7 +147,7 @@ def convert_skill(skill_dir, dst_name):
     at = fm.get("allowed-tools")
     if at:
         new["allowed-tools"] = ", ".join(at) if isinstance(at, list) else str(at)
-    body = re.sub(r"\bskill senior/([a-z0-9-]+)", r"skill senior-\1", body)
+    body = rewrite_skill_refs(body)
 
     out = DST / "skills" / dst_name
     if not DRY:
@@ -171,15 +195,21 @@ def main():
     if dups:
         report["notes"].append(f"DUPLICATE AGENT NAMES: {dups}")
 
-    for p in sorted((SKILLS_SRC / "senior/skills").glob("*/SKILL.md")):
+    for p in sorted((SKILLS_SRC / "senior").glob("*/SKILL.md")):
         convert_skill(p.parent, "senior-" + p.parent.name)
-    for p in sorted((SKILLS_SRC / "skills").rglob("SKILL.md")):
+    for p in sorted((SKILLS_SRC / "web-fullstack").rglob("SKILL.md")):
         convert_skill(p.parent, p.parent.name)
+    content_dir = SKILLS_SRC / "content"
+    if content_dir.is_dir():
+        for p in sorted(content_dir.rglob("SKILL.md")):
+            convert_skill(p.parent, p.parent.name)
 
-    for p in sorted((SKILLS_SRC / "commands").glob("*.md")):
-        if p.name == "README.md":
-            continue
-        convert_command(p)
+    commands_src = SKILLS_SRC / "commands"
+    if commands_src.is_dir():
+        for p in sorted(commands_src.glob("*.md")):
+            if p.name == "README.md":
+                continue
+            convert_command(p)
 
     print(f"agents: {len(report['agents'])} | skills: {len(report['skills'])} | commands: {len(report['commands'])}")
     ro = [a for a in report["agents"] if "read-only" in a[2]]
