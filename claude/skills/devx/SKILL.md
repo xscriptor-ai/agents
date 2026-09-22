@@ -937,7 +937,7 @@ Layout stack (first 3 examples in a column):
 
 ### 16.9 CTA Button (Stage 6)
 
-⚠️ **Do NOT hardcode colors.** The current button uses `#ffc400` / `#1a1a1a` which breaks the theme contract. Use this pattern:
+**Important — do NOT hardcode colors.** The current button uses `#ffc400` / `#1a1a1a` which breaks the theme contract. Use this pattern:
 
 ```css
 .button {

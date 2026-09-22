@@ -1,207 +1,254 @@
 # Xscriptor Code Structure
 
-This file describes the preferred code organization for the Xscriptor site.
+Where code goes, what each layer is responsible for, and the rules that keep the
+site consistent. Canonical placement rules — the current tree is the source of
+truth; this document explains the intent behind it.
 
-## Current Recommended Structure
+---
+
+## 1. Current tree
 
 ```text
-src/
-  app/
-    layout.tsx                    -- root layout: metadata, I18nProvider(es), theme
-    page.tsx                      -- home page (delegates to ClientComponentHome)
-    globals.css                   -- Tailwind v4 + CSS variables + keyframes
-
-    [locale]/                     -- i18n locale group (SSG for es, en, de)
-      layout.tsx                  -- locale-aware layout with I18nProvider
-      page.tsx                    -- localized home
-      blog/
-        page.tsx                  -- localized blog index (locale param)
-        [slug]/
-          page.tsx                -- localized article page (locale-aware markdown)
-      contacto/
-        page.tsx                  -- localized contact form
-      info/
-        page.tsx                  -- localized bio, press, timeline
-      obras/
-        page.tsx                  -- localized book gallery
-        literatura/
-          page.tsx                -- localized literature landing
-          boulevard/page.tsx      -- localized book reader
-          asintota/page.tsx       -- under construction
-          colaterales/page.tsx    -- under construction
-          primavera-en-el-desierto/page.tsx -- under construction
-          cielos-de-alquitran/page.tsx -- under construction
-      terminos-y-condiciones/
-        page.tsx                  -- localized terms
-
-    blog/                         -- blog (Spanish fallback)
-      page.tsx                    -- blog index
-      BlogPage.module.css
-      [slug]/
-        page.tsx                  -- static article (Spanish)
-        ArticlePage.module.css
-      post/                       -- legacy PHP viewer
-
-    obras/                        -- books (Spanish fallback)
-      page.tsx                    -- book gallery
-      ObrasPage.module.css
-      literatura/
-        page.jsx                  -- literature landing
-        LibrosPage.module.css
-        boulevard/
-          page.tsx                -- boulevard reader (Spanish)
-        asintota/
-          page.tsx                -- under construction
-        colaterales/
-          page.jsx                -- under construction
-        primavera-en-el-desierto/
-          page.tsx                -- under construction
-        cielos-de-alquitran/
-          page.jsx                -- under construction
-
-    contacto/
-      page.tsx                    -- contact form (localized via I18nProvider)
-      ContactPage.module.css
-
-    info/
-      page.tsx                    -- bio, press, timeline (localized)
-      InfoPage.module.css
-
-    terminos-y-condiciones/
-      page.jsx                    -- terms (localized)
-
-    components/
-      UnderConstruction.tsx       -- reusable under-construction component
-      ArticlesGrid.tsx            -- article grid (accepts emptyText prop)
-      ClientComponentHome.module.css
-      clientcomponenthome.tsx     -- home page: phrases, zigzag, videos, newsletter
-      transitionProvider.tsx      -- page transition wrapper
-      LoadingAnimation.tsx
-      xcomponents/
-        index.ts                  -- "use client" barrel re-exporting @xscriptor/xcomponents
-        xsocialcontact/
-          SocialIcons.tsx         -- custom SVG icons (not in npm package)
-      blog/
-        ArticleCard.tsx           -- article card (uses useT, useLocale)
-      layout/footer/
-        XFooterComponent.tsx      -- footer wrapper (uses useT("Footer"))
-      contact/
-        contactForm.tsx           -- legacy contact form
-
-    content/
-      articulos/
-        es/*.md                   -- 11 Spanish blog articles
-        en/*.md                   -- 11 English translations
-        de/*.md                   -- 11 German translations
-      boulevard/
-        es.mdx                    -- boulevard content (Spanish)
-        en.mdx                    -- boulevard content (English)
-        de.mdx                    -- boulevard content (German)
-
-    lib/
-      articles.ts                 -- locale-aware markdown parsing
-                                  -- getSortedArticles(locale), getArticleData(slug, locale)
-                                  -- falls back to es/ if locale dir missing
-
-messages/
-  es.json                         -- Spanish messages (898+ lines, 16 namespaces)
-  en.json                         -- English messages
-  de.json                         -- German messages
-
-public/
-  images/
-  favicon.ico
-  robots.txt
+xscriptor.com/
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx                  # root shell: metadata, theme script, providers, footer
+│   │   ├── page.tsx                    # "/" (Spanish home)
+│   │   ├── globals.css                 # Tailwind v4 import + tokens + global element rules
+│   │   ├── i18n-provider.tsx           # I18nProvider, useLocale, useT (+ t.raw)
+│   │   ├── not-found.tsx               # client 404
+│   │   ├── favicon.ico, icon.svg       # file-convention icons
+│   │   │
+│   │   ├── [locale]/
+│   │   │   ├── layout.tsx              # per-locale provider, hreflang, <html lang>
+│   │   │   ├── page.tsx                # localized home
+│   │   │   ├── UpdateHtmlLang.tsx
+│   │   │   ├── blog/
+│   │   │   │   ├── page.tsx            # listing (server) → BlogListClient
+│   │   │   │   └── [...slug]/page.tsx  # article (server) → XBlogDecrypt
+│   │   │   ├── contacto/
+│   │   │   │   ├── page.tsx
+│   │   │   │   └── ContactoClientPage.tsx
+│   │   │   ├── info/
+│   │   │   │   ├── page.tsx
+│   │   │   │   └── InfoClientPage.tsx
+│   │   │   ├── links/page.tsx
+│   │   │   ├── obras/
+│   │   │   │   ├── page.tsx
+│   │   │   │   ├── ObrasClientPage.tsx
+│   │   │   │   ├── boulevard/page.tsx
+│   │   │   │   ├── asintota/{page.tsx, AsintotaBook.tsx}
+│   │   │   │   ├── cielos-de-alquitran/{page.tsx, CielosDeAlquitranBook.tsx}
+│   │   │   │   ├── colaterales/page.tsx
+│   │   │   │   ├── primavera-en-el-desierto/page.tsx
+│   │   │   │   ├── la-danza-de-las-amapolas/{page.tsx, AmapolasBook.tsx}
+│   │   │   │   └── grafo/{page.tsx, GrafoPage.module.css}
+│   │   │   └── terminos-y-condiciones/{page.tsx, TermsClientPage.tsx}
+│   │   │
+│   │   ├── components/
+│   │   │   ├── clientcomponenthome.tsx         # home hero
+│   │   │   ├── ClientComponentHome.module.css
+│   │   │   ├── AsciiLoadingAnimation.tsx
+│   │   │   ├── ascii-frames.json               # precomputed intro frames
+│   │   │   ├── LenisProvider.tsx
+│   │   │   ├── transitionProvider.tsx          # navbar + language dock + route overlay
+│   │   │   ├── blog/BlogListClient.tsx
+│   │   │   ├── icons/navbar/navbarIcons.tsx
+│   │   │   ├── layout/ConditionalSeparator.tsx
+│   │   │   ├── layout/footer/XFooterComponent.tsx
+│   │   │   ├── publickey/{PublicKeyCard.tsx, PublicKeyCard.module.css}
+│   │   │   ├── socialgrid/SocialGrid.tsx
+│   │   │   ├── xbackgrounds/ParticlesBackground.tsx
+│   │   │   ├── Xtexts/XTextDecrypt/{XTextDecrypt.tsx, index.ts}
+│   │   │   └── xcomponents/                    # see below
+│   │   │
+│   │   ├── blog/
+│   │   │   ├── BlogListPage.module.css         # CSS for BlogListClient
+│   │   │   └── [slug]/ArticlePage.module.css   # CSS for the article page
+│   │   ├── contacto/ContactPage.module.css
+│   │   ├── info/InfoPage.module.css
+│   │   ├── obras/ObrasPage.module.css
+│   │   │
+│   │   ├── content/                            # authored content (not code-gen)
+│   │   │   ├── articulos/{locale}/**/*.md
+│   │   │   └── <book>/{locale}.mdx
+│   │   │
+│   │   └── lib/{articles.ts, i18n-utils.ts}
+│   └── lib/poemParser.ts
+│
+├── messages/{es,en,de,it,fr}.json
+├── public/                                     # static assets + .htaccess + _headers
+├── docs/{STRUCTURE.md, xcomponents-fixes.md}
+├── next.config.ts, next-sitemap.config.js, postcss.config.mjs
+├── eslint.config.mjs, package.json, tsconfig.json, README.md, CONTRIBUTING.md, CONTACT.md
+└── LICENSE
 ```
 
-## Route responsibilities
+### `src/app/components/xcomponents/` (local reusable UI)
 
-### `page.tsx` (route root)
+```text
+xcomponents/
+  index.ts                     # "use client" barrel (the import surface)
+  xglassnavbar/{XGlassNavbar.tsx, XGlassNavbar.module.css}
+  xzigzagvideo/{XZigZagLayoutVideo.tsx, .module.css}
+  xhomecolors/{XHomeColors.tsx, .module.css}
+  xbookcolors/{XBookColors.tsx, .module.css, README.md}
+  xcompletebook/{XCompleteBook.tsx, .module.css}   # NOTE: currently unreferenced
+  xminimalfooter/XMinimalFooter.tsx
+  BookReaderPoems.tsx + BookReaderPoems.module.css
+  grafo/{GrafoPoetico.tsx, GrafoPoetico.module.css}
+  xblogdecrypt/{XBlogDecrypt.tsx, README.md, index.ts}
+```
 
-- compose the route from imported sections and components
-- keep inline JSX minimal; delegate layout to CSS modules
-- export metadata or `generateMetadata` for SEO
-- for localized routes: use `useT()` or pass locale to data functions
+Naming quirk: most CSS modules live in **non-route sibling folders**
+(`src/app/blog/`, `src/app/obras/`, `src/app/contacto/`, `src/app/info/`) while
+the route pages live under `[locale]/`. Components import them with the absolute
+alias, e.g. `import styles from "@/app/blog/BlogListPage.module.css"`. Follow
+this pattern rather than moving CSS next to the `[locale]` page.
 
-### `[locale]/` routes
+---
 
-- always define `generateStaticParams` returning `["en", "es", "de"]`
-- use `useT(namespace?)` for UI text
-- pass locale to data functions (`getSortedArticles(locale)`, `getArticleData(slug, locale)`)
-- fall back to `es/` content when translation doesn't exist
+## 2. Layer responsibilities
 
-### `module.css`
+### Route entry (`page.tsx`) — Server Component
 
-- control route-level spacing, header, and layout grid
-- avoid styling deep reusable widgets here
+- Export `metadata` or `generateMetadata` (SEO + Open Graph locale).
+- For localized routes, `await params` to get the locale.
+- Fetch build-time data (`getSortedArticles`, `getArticleData`, `getAllPoems`,
+  `fs.readFileSync` for books).
+- Delegate all interactivity to a client component (`*ClientPage`, readers,
+  `BlogListClient`) — do not put hooks in the page.
+- Keep the page thin; layout lives in CSS modules or the client component.
 
-### `xcomponents/*`
+### `layout.tsx`
 
-- own reusable or semi-reusable UI blocks
-- keep related CSS local to the component folder
-- when modifying, prefer editing the local copy over the npm dependency
-- for i18n: components accept string props with Spanish defaults
+- Root: global metadata, theme `<Script>`, `I18nProvider(es)`, `LenisProvider`,
+  `TransitionProvider`, separators, `main`, footer, skip link.
+- `[locale]`: validate locale, inject the correct messages, `UpdateHtmlLang`,
+  emit hreflang alternates.
+- Do not add page-specific content to layouts.
 
-### `content/articulos/{locale}/*.md`
+### Client page component (`*ClientPage.tsx`)
 
-- frontmatter: `title`, `date`, `description`, `tags`, `image`, `author`, `keywords`, `categories`
-- body: markdown with optional LaTeX (math delimiters: `$$` or `\( \)`)
-- same slug across locales = same article in different languages
+- Owns local UI state and `useT`-based copy.
+- Composes reusable components; keeps JSX declarative.
+- Often pairs with `ParticlesBackground` (contact/info).
 
-### `content/boulevard/{locale}.mdx`
+### Reusable UI
 
-- raw text with poem sections separated by 3+ blank lines
-- XBookReader splits on `\n{3,}` into poems, groups into pages
-- blank line structure must be identical across languages
+- Site-specific reusable blocks → `src/app/components/<area>/` with a colocated
+  `*.module.css`, exported through the barrel if server components need them.
+- Cross-project library components → `@xscriptor/xcomponents` (update the
+  package + bump version; never fork).
+- Animation primitives (`XTextDecrypt`, `XBlogDecrypt`) stay in the app when they
+  depend on app-specific content shape.
 
-### `lib/articles.ts`
+### Data / parsing
 
-- locale-aware: all functions accept optional `locale` parameter
-- falls back to `es/` when locale directory or file doesn't exist
-- exports: `getSortedArticles(locale?)`, `getArticleData(slug, locale?)`, `getAllArticleSlugs(locale?)`, `getArticlesByCategory(category, locale?)`
+- `src/app/lib/articles.ts` — blog markdown pipeline (build-time only).
+- `src/app/lib/i18n-utils.ts` — `getMsg` for server components.
+- `src/lib/poemParser.ts` — aggregate poems for the graph (build-time only).
+- Any new `fs`-using parser: keep it in a `lib/` module, call it only from
+  server components.
 
-### `messages/{locale}.json`
+### Content
 
-- namespace-based JSON structure
-- accessed via `useT(namespace)` hook or `getMsg()` helper in server components
-- arrays/objects accessed via `t.raw<T>(key)`
+- `src/app/content/articulos/{locale}/` — blog markdown.
+- `src/app/content/<book>/{locale}.mdx` — book text.
+- Author content by hand; never generate it at runtime.
 
-## Ideal rules for future changes
+### Messages
 
-- if logic is route-only, keep it near the route
-- if UI is reusable, move it to `xcomponents`
-- if content is structured, move it to `content`
-- if a component needs its own visual language, give it its own `module.css`
-- prefer TypeScript for all new files; migrate `.jsx` files when editing them
-- use the local xcomponents copy when the npm package needs modifications
-- add new articles as `.md` files in `content/articulos/{locale}/` with proper frontmatter
-- add new message keys to all 3 locale files simultaneously
-- for translated content, use the same filename across locale directories
+- `messages/{locale}.json` — UI strings, namespaced.
+- Add keys to **all five** locales simultaneously.
 
-## Anti-patterns
+### CSS
 
-- large data arrays inside `page.tsx`
-- multiple unrelated widgets sharing one CSS module
-- hardcoded colors instead of CSS custom properties
-- mixing layout, data, and business logic in the same file
-- adding Tailwind utility noise to components that already have dedicated CSS modules
-- editing the npm `@xscriptor/xcomponents` package directly (update the package and bump version instead)
-- copying npm components into `xcomponents/` (use the barrel re-export `index.ts`)
-- importing `@xscriptor/xcomponents` directly in a Server Component — always go through the `"use client"` barrel at `@/app/components/xcomponents`
-- putting PHP files inside `src/app/` that Next.js tries to process
-- hardcoding text without adding it to messages files
-- using `vw` units for padding without `clamp()` to cap on wide screens
-- adding only to one locale's message file when adding new keys
+- Global tokens, element resets, `.article-content`, utilities, keyframes →
+  `globals.css` only.
+- Route/section layout → the route’s `*.module.css`.
+- Component internals → the component folder’s `*.module.css`.
+- Prefer Tailwind utilities for spacing/layout in simple JSX; use CSS modules
+  for anything stateful or repeated. Do not mix heavy Tailwind noise into a
+  component that already has a module.
 
-## Preferred editing strategy for AI agents
+---
 
-1. inspect the route entry (`page.tsx` or `page.jsx`)
-2. identify reusable boundaries
-3. inspect nearby CSS modules and data files
-4. if a new npm component is needed, add its re-export to `src/app/components/xcomponents/index.ts`
-5. keep CSS local and readable
-6. verify light and dark theme after edits
-7. verify responsive behavior after edits
-8. check all 3 locale message files when adding new text
-9. **never** import `@xscriptor/xcomponents` directly in a Server Component — always use the barrel
-10. run `npm run build` before finalizing
+## 3. Import rules
+
+- Use the path aliases: `@/app/...`, `@/lib/...`.
+- Import reusable components from the barrel:
+  `import { XBookColors } from "@/app/components/xcomponents";`
+- **Never** import `@xscriptor/xcomponents` directly from a Server Component —
+  go through the `"use client"` barrel (see `architecture.md` §6).
+- The barrel must stay `"use client"`. If you add a component that needs client
+  hooks, add its re-export line to `index.ts`.
+
+---
+
+## 4. Ideal rules for future changes
+
+- Route-only logic stays near the route; shared logic moves to `lib/`.
+- Reusable UI moves to `xcomponents/` and, if browser-only, through the barrel.
+- Structured content moves to `content/`; interface copy moves to `messages/`.
+- Give a component its own `module.css` the moment it develops a visual language.
+- Prefer TypeScript for all new files; migrate stray `.jsx`/`.js` when touched.
+- Add new locales to every locale list (or better, centralize them — see §6).
+- Use `clamp()` for fluid sizing; cap wide-screen padding.
+- Verify both themes and `<768px` after any visual change.
+- Run `npx tsc --noEmit` then `npm run build` before finalizing.
+
+---
+
+## 5. Anti-patterns
+
+- Large inline data arrays inside `page.tsx` (put them in a `const` beside the
+  route or in `lib/`).
+- Multiple unrelated widgets sharing one CSS module.
+- Hardcoded colors instead of `var(--bg|--text|--accent|--border)` (the book /
+  graph palettes are the only exceptions).
+- Hardcoded user-facing text that never reaches `messages/*.json` (or, for the
+  documented per-component dictionaries, at least translated in place).
+- Copying npm components into `xcomponents/` instead of using the barrel.
+- Editing the npm `@xscriptor/xcomponents` package inside `node_modules`.
+- Importing `@xscriptor/xcomponents` directly in a Server Component.
+- Using `vw` for padding without `clamp()`.
+- Adding a key to only one locale’s message file.
+- Hand-authoring `robots.txt`/`sitemap.xml` in `public/` (next-sitemap owns them).
+- Adding server-only APIs (`route.ts`, middleware, revalidate) — export is static.
+- Using `dangerouslySetInnerHTML` on untrusted input (XBlogDecrypt/Grafo inject
+  generated HTML into trusted, in-repo content only).
+
+---
+
+## 6. Known structural debt (fix opportunistically)
+
+1. **Locale list duplication** across ~9 files. A single
+   `src/lib/locales.ts` exporting `LOCALES`, `Locale`, `FALLBACK_LOCALE`,
+   `INDEX_HEADERS`, `OG_LOCALE` would remove most of it.
+2. **Two locale regexes** — `XFooterComponent` and `not-found.tsx` only handle
+   `en|es|de`, so Italian/French fall back to Spanish. Align them with
+   `transitionProvider`.
+3. **Inline nav/reader dictionaries** in components vs `messages/`. Migrate
+   `TransitionProvider` labels and reader section names into messages when
+   convenient.
+4. **Unreferenced local `XCompleteBook.tsx`** — delete or wire it up.
+5. **Unused deps** (`gsap`, `react-intersection-observer`) — confirm and prune.
+6. **`a:hover { color:#ff4141 }`** global override fights accent links; scope it.
+7. **`InfoPage` 15vw padding** should become `clamp()` for small screens.
+
+---
+
+## 7. Preferred editing strategy for AI agents
+
+1. Read the route entry (`page.tsx`) and its client component.
+2. Read the relevant CSS module and the data file it depends on.
+3. If a reusable block is needed, add it under `components/` and, if it must be
+   server-importable, to the barrel.
+4. Keep new copy in `messages/*.json` for all five locales (plus per-component
+   tables where the codebase already does so).
+5. Respect the design system (`design-system.md`): tokens, marker chips, motion
+   budget, reduced motion.
+6. Verify light/dark and mobile.
+7. `npx tsc --noEmit` → `npm run build`.
+8. Never commit secrets; never add a runtime server dependency.

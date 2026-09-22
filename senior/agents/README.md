@@ -34,6 +34,6 @@
 
 <ul>
   <li><a href="../../agents/">Specialized agents</a></li>
-  <li><a href="https://github.com/xscriptor-ai/skills/tree/main/senior/skills">Senior skills</a></li>
+  <li><a href="https://github.com/xscriptor-ai/skills/tree/main/senior">Senior skills</a></li>
   <li><a href="https://github.com/xscriptor-ai/skills">Skills</a></li>
 </ul>

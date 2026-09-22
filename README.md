@@ -6,6 +6,7 @@ Ready-to-use **AI agents** for [OpenCode](https://opencode.ai) and [Claude Code]
 
 - `agents/` — 181 specialized agents (33 groups)
 - `senior/agents/` — 24 consolidated senior agents (16 ecosystems)
+- `bundle/` — skill-enabled copies: agents wired to the senior skills (see `bundle/README.md`)
 - `claude/` — generated Claude Code mirror of all agents/skills/commands (see `claude/tools/xscriptor-convert.py`)
 
 ## Companion Repos

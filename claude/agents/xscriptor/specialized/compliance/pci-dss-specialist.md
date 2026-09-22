@@ -59,9 +59,9 @@ nmap -sV -p 443,8443 --script ssl-enum-ciphers payment.example.com
 nmap -sV -O -p- 10.0.0.0/24 -oA cde_scan
 
 # TLS requirements (Req 4)
-# ✅ TLS 1.2+ with strong ciphers
-# ❌ SSLv3, TLS 1.0, TLS 1.1
-# ❌ Weak ciphers: RC4, DES, 3DES, EXPORT
+# OK: TLS 1.2+ with strong ciphers
+# BAD: SSLv3, TLS 1.0, TLS 1.1
+# BAD: Weak ciphers: RC4, DES, 3DES, EXPORT
 ```
 
 ## SAQ Types

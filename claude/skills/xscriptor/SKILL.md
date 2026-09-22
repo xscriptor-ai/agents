@@ -1,412 +1,332 @@
 ---
 name: xscriptor
-description: Full-stack documentation for the Xscriptor literary portfolio site. Invoke
-  when extending pages, refactoring components, managing content, or modifying the
-  build pipeline.
-allowed-tools: Read, Glob, Grep, Edit, Write
+description: Full design and development documentation for xscriptor.com, the Xscriptor
+  literary portfolio (Next.js 16 App Router, static export, five locales, four book-reader
+  engines, decryption animations). Use when building or modifying pages, components,
+  CSS, content, i18n, book readers, or the build/deploy of xscriptor.com.
+allowed-tools: Read, Glob, Grep, Edit, Write, Bash
 ---
 
 # Xscriptor Site System
 
-This skill documents the complete architecture of xscriptor.com -- a personal literary portfolio, blog, and art gallery built with Next.js 16 App Router and statically exported.
+`xscriptor.com` is the personal literary portfolio, blog, book library and art
+surface of the author/artist **Xscriptor** (Óscar Preciado). It is a **fully
+static, multilingual Next.js 16 App Router** site whose signature interaction is
+text that decrypts character by character, set in EB Garamond over full-bleed
+art.
 
-Companion references:
+This skill documents the whole system — design language, architecture, routes,
+components, content pipeline, book readers, i18n, theming, SEO, security and
+deployment — so an agent can extend the site without breaking its voice or its
+conventions.
 
-- `references/code-structure.md`: preferred file placement, responsibilities, and anti-patterns
+Repository: `github.com/xscriptor-web/xscriptor.com` (branch `main`). The Next
+app lives at the repository root.
 
-Use this skill when:
+## Companion references
 
-- building new pages or sections (blog, books, info, contact)
-- refactoring layout, CSS, or component boundaries
-- adding or updating content (articles, book pages)
-- modifying the blog pipeline or markdown processing
-- making UI changes that must stay visually consistent
-- configuring the static export or build process
+Read the one(s) relevant to the task; they are the detailed source of truth.
+
+| Reference | Covers |
+|-----------|--------|
+| `references/design-system.md` | Brand intent, color tokens, typography, surfaces (glass/neumorphism/marker chips), motion language, breakpoints, a11y |
+| `references/architecture.md` | Stack, rendering model, route table, providers, i18n, theme, SEO, security, gotchas |
+| `references/component-catalog.md` | Every component: location, props, behavior, recipes |
+| `references/content-pipeline.md` | Blog article pipeline, book MDX format, `poemParser`, `messages` + `WordConfig` |
+| `references/book-readers.md` | The four reader engines and their parsing/pagination algorithms |
+| `references/build-and-deploy.md` | Scripts, static export, sitemap, `.htaccess`/`_headers`, hosting, validation |
+| `references/code-structure.md` | Where code goes, responsibilities, import rules, anti-patterns, debt |
+
+## When to use this skill
+
+- Adding or editing any page, section or route on xscriptor.com.
+- Building or refactoring components, CSS modules, or global styles.
+- Working on the book readers, blog pipeline, graph, contact/PGP page or home hero.
+- Adding articles, books, translations or UI strings.
+- Touching i18n, theming, SEO/metadata, static export or deployment config.
+- Anything that must stay visually and structurally consistent with the site.
 
 ---
 
-## 1. Core Design Intent
+## 1. Design intent (the part that matters most)
 
-The site is a personal literary portfolio for an author, poet, and artist. It must balance:
+The site must read like **a printed literary edition that has learned to
+decrypt itself**. Concretely:
 
-- **literary elegance** -- typography-driven, generous whitespace, restrained color
-- **content-first** -- text is primary; UI decorates, never dominates
-- **dark-mode aware** -- full light/dark theme with smooth transitions
-- **static by default** -- every page is pre-rendered; no server runtime in production
+- **Typography-first.** EB Garamond carries everything. No display font, no icon
+  font. Words are the interface.
+- **Marker aesthetic.** Text over imagery sits on soft `color-mix` chips so it
+  stays legible.
+- **One accent per theme.** Deep violet (`#5b2e8d`) in light, warm gold
+  (`#ffe884`) in dark. Everything else is background/text/border.
+- **Atmospheric art.** Full-viewport photographs and pre-rendered background
+  frames behind a dark overlay; the art is the stage, never the subject.
+- **Motion reveals, it does not decorate.** Decryption, blur-to-focus, staggered
+  fades, a scroll-drawn connecting line.
+- **Literary + cryptographic tension.** Poetic prose next to PGP fingerprints and
+  descrambling text is the brand, not a gimmick.
+- **Both themes first-class; accessible by default; static by default.**
+
+If a proposed UI is clever but reads as generic SaaS, reject it. Choose clarity
+and voice over novelty.
 
 ---
 
-## 2. Tech Stack
+## 2. Tech stack at a glance
 
 | Layer | Choice |
 |-------|--------|
-| Framework | Next.js 16 App Router |
-| Language | TypeScript + JavaScript (`.jsx` in legacy pages) |
-| CSS | Tailwind CSS v4 + CSS Modules |
-| Animations | framer-motion (page transitions, cards), GSAP (ImageTrail) |
-| Content | Markdown + gray-matter + remark/rehype pipeline |
-| Blog | Static (`/blog/[slug]`) + PHP-backed (`/blog/post?slug=`) |
-| Theme | `data-theme` attribute + localStorage |
-| Icons | Custom SVG components in `@xscriptor/xcomponents` |
-| Build | Static export (`output: "export"`) |
-| Hosting | Apache with PHP (Hostinger) |
-| External lib | `@xscriptor/xcomponents` (npm, v0.1.3) |
+| Framework | **Next.js 16.3** App Router, `output: "export"`, `trailingSlash: true` |
+| Language | TypeScript 5 (`strict`), React 19.2, some JS |
+| Styling | Tailwind CSS 4.3 (PostCSS) **+ CSS Modules** |
+| Font | Self-hosted **EB Garamond** (Regular + Italic, woff2) |
+| Motion | `framer-motion` 12 |
+| Smooth scroll | `lenis` 1.3 |
+| Content | Markdown/MDX + `gray-matter` + `remark`/`rehype` (GFM, KaTeX, highlight) |
+| Components | `@xscriptor/xcomponents` (npm) + local copies |
+| Backgrounds | `@xscriptor/xbackgrounds` (`XParticles`) |
+| Sitemap | `next-sitemap` on `postbuild` |
+| Hosting | Static (Apache `.htaccess`, or `_headers` platforms) |
+
+No server runtime, no API routes, no PHP, no env vars. Details in
+`architecture.md` §1.
 
 ---
 
-## 3. Project Structure
+## 3. Rendering model in one minute
 
-```
-xscriptor/
-  src/
-    app/
-      layout.tsx                    -- root layout (html, metadata, theme, fonts)
-      page.tsx                      -- home page (delegates to ClientComponentHome)
-      globals.css                   -- Tailwind v4 import + theme variables + keyframes
+- **Everything is pre-rendered.** `page.tsx` files are Server Components; book
+  pages read MDX from disk at build time and pass raw text to client readers.
+- **Interactive code is `"use client"`**, including the `"use client"` barrel at
+  `src/app/components/xcomponents/index.ts`. Server Components must import
+  reusable components **only** via that barrel.
+- **Two locales layers:** the root layout hardcodes `es` (so `/` is Spanish); the
+  `[locale]` layout mounts a nested `I18nProvider` with the requested locale.
+- **Providers wrap the app** in the root layout: `LenisProvider` (smooth scroll),
+  `TransitionProvider` (glass navbar + language dock + route overlay), then
+  separators, `main`, footer.
+- **Theming** uses `data-theme` on `<html>` + `localStorage["theme"]`, applied
+  before first paint by a `beforeInteractive` script and toggled by the navbar
+  logo.
 
-      [locale]/                     -- i18n locale group route
-        layout.tsx                  -- locale-aware layout with I18nProvider
-        page.tsx                    -- localized home
-        blog/
-          page.tsx                  -- localized blog index (reads locale param)
-          [slug]/page.tsx           -- localized article page (locale param + fallback)
-        contacto/page.tsx           -- localized contact form + social
-        info/page.tsx               -- localized bio, press, timeline
-        obras/
-          page.tsx                  -- localized book gallery
-          literatura/
-            page.tsx                -- localized literature landing
-            boulevard/page.tsx      -- localized boulevard reader (3 langs)
-            asintota/page.tsx       -- under construction (3 langs)
-            colaterales/page.tsx    -- under construction (3 langs)
-            primavera-en-el-desierto/page.tsx -- under construction (3 langs)
-            cielos-de-alquitran/page.tsx -- under construction (3 langs)
-        terminos-y-condiciones/page.tsx -- localized terms
-
-      blog/                         -- blog section (Spanish fallback)
-        page.tsx                    -- blog index
-        [slug]/page.tsx             -- static article page
-
-      obras/                        -- books section (Spanish fallback)
-        page.tsx                    -- book gallery
-        literatura/
-          boulevard/page.tsx        -- boulevard reader (Spanish)
-          asintota/page.tsx         -- under construction
-          colaterales/page.jsx      -- under construction
-          primavera-en-el-desierto/page.tsx -- under construction
-          cielos-de-alquitran/page.jsx -- under construction
-
-      contacto/page.tsx             -- contact form (localized via I18nProvider)
-      info/page.tsx                 -- bio, press, timeline (localized)
-      terminos-y-condiciones/page.jsx -- terms (localized)
-
-      api/subscribe/guardar_email.php  -- newsletter PHP endpoint
-
-      components/                   -- shared local components
-        xcomponents/
-          index.ts                  -- "use client" barrel re-exporting @xscriptor/xcomponents
-          xsocialcontact/
-            SocialIcons.tsx         -- custom SVG icons (not in npm)
-        UnderConstruction.tsx       -- reusable under-construction component
-        ArticlesGrid.tsx            -- article card grid (accepts emptyText prop)
-        clientcomponenthome.tsx     -- home page client component (phrases, videos, newsletter)
-        transitionProvider.tsx      -- page transition wrapper
-
-      content/
-        articulos/                  -- blog articles by locale
-          es/*.md                   -- 11 Spanish articles
-          en/*.md                   -- 11 English translations
-          de/*.md                   -- 11 German translations
-        boulevard/
-          es.mdx                    -- boulevard book content (Spanish)
-          en.mdx                    -- boulevard book content (English)
-          de.mdx                    -- boulevard book content (German)
-
-      lib/
-        articles.ts                 -- locale-aware markdown parsing pipeline
-
-  messages/                         -- i18n JSON message files
-    es.json                         -- Spanish (898+ lines)
-    en.json                         -- English
-    de.json                         -- German
-
-  public/
-    images/                         -- static images
-    .htaccess                       -- Apache rewrite rules + security headers (CSP, HSTS, etc.)
-    robots.txt                      -- auto-generated by next-sitemap
-    sitemap.xml                     -- auto-generated by next-sitemap
-```
+Full detail: `architecture.md` §2–§7.
 
 ---
 
-## 4. Component System
+## 4. Route map (summary)
 
-### Source of truth: `@xscriptor/xcomponents` (npm)
+All pages live under `[locale]` (`es`, `en`, `de`, `it`, `fr`; `es` fallback):
 
-All reusable UI components come exclusively from the `@xscriptor/xcomponents` npm package. **No local copies exist.**
+| Path | What |
+|------|------|
+| `/` and `/[locale]` | Home hero (ASCII intro → zigzag phrases) |
+| `/[locale]/blog` | Article listing (search + category pills, center-blur cards) |
+| `/[locale]/blog/[...slug]` | Article (markdown → KaTeX/highlight → decrypt) |
+| `/[locale]/obras` | Book gallery (center-blur cards + graph card) |
+| `/[locale]/obras/{boulevard,asintota,cielos-de-alquitran,colaterales,primavera-en-el-desierto,la-danza-de-las-amapolas}` | Book readers |
+| `/[locale]/obras/grafo` | Canvas poem graph |
+| `/[locale]/contacto` | PGP public-key card + social grid |
+| `/[locale]/info` | Bio, press cards, timeline |
+| `/[locale]/links` | Link list |
+| `/[locale]/terminos-y-condiciones` | Terms/privacy/cookies |
+| 404 | `src/app/not-found.tsx` |
 
-The only local file is a barrel re-exporter at `src/app/components/xcomponents/index.ts`:
-
-```tsx
-"use client";
-export { XNavbar } from "@xscriptor/xcomponents";
-export { XFooter, XSeparator, XZigZagLayout } from "@xscriptor/xcomponents";
-export { XBookReader, XBookReaderIllus, XInteractivePhrase } from "@xscriptor/xcomponents";
-export { XContactForm, XNewsletter, XSocialContact } from "@xscriptor/xcomponents";
-```
-
-This file exists for one reason: the npm package's bundled dist (`chunk-*.mjs`) does **not** preserve the `"use client"` directive. Server Components (pages that use `fs.readFileSync`, like boulevard, primavera) cannot import client-hook-dependent components directly from the npm bundle without hitting `useState is not a function` errors. The barrel file adds the `"use client"` boundary that Next.js needs.
-
-#### Exception
-
-`src/app/components/xcomponents/xsocialcontact/SocialIcons.tsx` — custom SVG icon components (TelegramIcon, WhatsappIcon, etc.) that are not part of the npm package. Keep this file; delete everything else inside `xcomponents/`.
-
-#### Component table
-
-| Component | Where it comes from |
-|-----------|---------------------|
-| XNavbar | `@xscriptor/xcomponents` via barrel |
-| XFooter | `@xscriptor/xcomponents` via barrel |
-| XContactForm | `@xscriptor/xcomponents` via barrel |
-| XSocialContact | `@xscriptor/xcomponents` via barrel |
-| XNewsletter | `@xscriptor/xcomponents` via barrel |
-| XInteractivePhrase | `@xscriptor/xcomponents` via barrel |
-| XSeparator | `@xscriptor/xcomponents` via barrel |
-| XZigZagLayout | `@xscriptor/xcomponents` via barrel |
-| XBookReader | `@xscriptor/xcomponents` via barrel |
-| XBookReaderIllus | `@xscriptor/xcomponents` via barrel |
-| SocialIcons (TelegramIcon, etc.) | local only (`xsocialcontact/SocialIcons.tsx`) |
-
-#### Important rules
-
-- **Never** copy a component from npm into `xcomponents/`. If you need to modify a component, update `@xscriptor/xcomponents` and bump the version.
-- The barrel file must remain `"use client"` — do not remove that directive.
-- When adding a new component from npm to the barrel, add its re-export line to `index.ts`.
-- `XBookReader` and `XBookReaderIllus` accept only `{ rawText, coverImage? }` — no `coverAlt`, `prevLabel`, `nextLabel`, `pageOfLabel`. Pagination text is hardcoded in Spanish.
-- When importing in a page, use `import { Component } from "@/app/components/xcomponents"` (the barrel), **not** the npm direct path.
-
-### Component conventions
-
-- Tailwind utility classes are preferred for layout and spacing in pages.
-- Components from `@xscriptor/xcomponents` handle their own styles internally.
-- No CSS Modules are needed at the `xcomponents/` level — all styling comes from the npm package.
+Exact files and data sources: `architecture.md` §3.
 
 ---
 
-## 5. Content Management
+## 5. The design system (essentials)
 
-### Articles (blog)
+Full token tables and rules in `design-system.md`. The non-negotiables:
 
-Markdown files live in `src/app/content/articulos/` with frontmatter:
+### Colors — use the variables, never raw hex
 
-```yaml
----
-title: "Article Title"
-date: "2024-01-01"
-description: "A short summary"
-tags: ["literature", "philosophy"]
-image: "/images/articles/og-image.jpg"
----
-```
+Light: `--bg #ffffff`, `--text #000000`, `--accent #5b2e8d`,
+`--accent-text #ffffff`, `--border rgba(0,0,0,.1)`, `--foreground #171717`,
+`--text-muted #6b7280`, `--primary #4328a8`, `--primary-hover #7c3aed`,
+`--success #10b981`.
 
-Parsed by `src/app/lib/articles.ts` using:
-- `gray-matter` for frontmatter
-- `remark` + `remark-html` for markdown to HTML
-- `remark-math` + `rehype-katex` for LaTeX math rendering
+Dark (`:root[data-theme="dark"], :root.dark`): `--bg #0a0a0a`, `--text #ffffff`,
+`--accent #ffe884`, `--accent-text #000000`, `--border rgba(255,255,255,.1)`,
+`--foreground #ededed`, `--text-muted #9ca3af`, `--primary #fbbf24`,
+`--primary-hover #f59e0b`, `--success #34d399`.
 
-### Books
+Only sanctioned raw hexes: the book word palette (`c1`–`c5`) and the graph’s
+8-color palette.
 
-Each book has its own page under `src/app/obras/literatura/`. Pages use `.mdx` (boulevard) or direct `.tsx`/`.jsx` content. The `XBookReader` component provides paginated reading with page-turn animations.
+### Type
 
-### Blog dual system
+EB Garamond everywhere. Global centered defaults: `h1` 400/`clamp(16px,12vw,32px)`,
+`h2` 300/`clamp(24px,8vw,26px)`, `h3` 600/`clamp(20px,9vw,26px)`,
+`p` 400/`clamp(18px,2.5vw,20px)` with side padding `clamp(1rem,8vw,4rem)`.
+`.article-content` resets prose to left-aligned, `line-height 1.8`. Monospace is
+only for code/keys/meta.
 
-| Route | Type | Data Source |
-|-------|------|-------------|
-| `/blog/[slug]` | Static (SSG) | Local markdown files via `getArticleData()` |
-| `/blog/post?slug=X` | Client-side fetch | PHP endpoint returning HTML |
-
-The static route is the primary system. The PHP-backed route is a legacy fallback for dynamic content that could not be pre-rendered.
-
----
-
-## 6. Styling Conventions
-
-### Tailwind v4
-
-- `globals.css` uses `@import "tailwindcss"` (v4 syntax).
-- `tailwind.config.ts` still exists but is inert for v4 (kept for editor support).
-- No `@apply`, no `@tailwind base/components/utilities` directives.
-
-### Theme variables
-
-Defined in `globals.css` under `:root` and `[data-theme="dark"]`:
+### Marker chip (the signature atom)
 
 ```css
-:root {
-  --background: #fafaf9;
-  --foreground: #1c1917;
-  --primary: #b45309;
-  --muted: #78716c;
-  --border: #e7e5e4;
-  --card-bg: rgba(255, 255, 255, 0.7);
-}
-
-[data-theme="dark"] {
-  --background: #0c0a09;
-  --foreground: #f5f5f4;
-  /* ... */
-}
+background: color-mix(in srgb, var(--bg) 88%, transparent);
+padding: 0.1em 0.35em; border-radius: 0.2em;
+box-decoration-break: clone; -webkit-box-decoration-break: clone;
 ```
 
-### CSS Modules
+### Glass
 
-- Page-specific layouts use `*.module.css` files colocated with the route.
-- Component styles use `*.module.css` inside the component folder.
-- Global styles, keyframes, and theme tokens stay in `globals.css`.
+`color-mix(in srgb, var(--bg) 70%, transparent)` (light) / `15%` (dark) +
+`backdrop-filter: blur(18–20px)` + `1px solid var(--border)`.
 
----
+### Neumorphism
 
-## 7. Theme System
+Only `PublicKeyCard`, via `--neumorph-bg` and `:root.light` / `:root.dark`.
 
-- Toggle stored in `localStorage` as `data-theme` (values: `"light"`, `"dark"`).
-- Applied via `data-theme` attribute on `<html>`.
-- Script in layout sets the attribute before first paint to prevent flash.
-- Tailwind uses `dark:` variants alongside CSS custom properties.
+### Motion
 
----
-
-## 8. Animation Patterns
-
-| Library | Usage |
-|---------|-------|
-| framer-motion | Page transitions (`AnimatePresence`), card hover effects, staggered reveals, scroll-triggered animations |
-| GSAP | `ImageTrail` component (8 visual variants with canvas and DOM-based trailing effects) |
-| lottie-react | Loading animation shown during initial page load |
-
-### Motion rules
-
-- Subtle, brief, purposeful. No decorative bounce or parallax.
-- Page transitions: `fadeInUp` variant, 0.3-0.5s, ease-out.
-- Hover: scale 1.02-1.05, color shift, shadow lift.
-- Respect `prefers-reduced-motion` via `useReducedMotion()`.
-- IntersectionObserver used for scroll-triggered reveals.
+Subtle, brief, purposeful; reveal not decorate. Respect
+`prefers-reduced-motion` (global rule + component guards). Decrypt speed default
+50 ms (article body 10 ms). See `design-system.md` §6.
 
 ---
 
-## 9. Static Export Configuration
+## 6. The book reader engines (choose deliberately)
 
-`next.config.mjs`:
+Four engines share the block/section/index/4-5-per-page model but differ:
 
-```js
-output: "export",
-trailingSlash: true,
-images: { unoptimized: true }
+| Engine | Books | Signature |
+|--------|-------|-----------|
+| `XBookReader` (npm) | Boulevard | simplest paginated reader |
+| `XCompleteBook` (npm, via barrel) | Asintota, Amapolas | section/index pages + `renderPoem` override |
+| `XBookColors` (local) | Cielos de Alquitrán, Primavera, Amapolas page | rotating full-bleed backgrounds + per-word colors/decrypt |
+| `BookReaderPoems` (local) | Colaterales | index-driven poem reordering + titles |
+
+Poem words become `WordConfig[]` with hashed `underline`/`button`/`blur1`/
+`blur2`/`normal` types plus a safety fallback so blurred words are always
+revealable. Deep dive, parsing algorithms and pitfalls: `book-readers.md`.
+
+---
+
+## 7. Content & i18n essentials
+
+- **Blog**: `src/app/content/articulos/{locale}/**/*.md`; parsed by
+  `src/app/lib/articles.ts` (frontmatter → markdown → GFM/KaTeX/highlight → HTML;
+  duplicate H1/author stripped; soft lines → `<br>`; tables wrapped;
+  `readingTime = ceil(words/200)`); `es` fallback; `research/` excluded from
+  listings.
+- **Books**: `src/app/content/<book>/{locale}.mdx`, read as raw text
+  (`cielos-de-alquitran` ES file is `cielos-de-alquitran.mdx`).
+- **UI strings**: `messages/{locale}.json`, namespaced; consume with
+  `useT(namespace)` (client) or `getMsg` (server); add keys to **all five**
+  locales.
+- **`HomePhrases`** holds `WordConfig[]` arrays consumed by `XHomeColors`.
+- **Graph**: `src/lib/poemParser.ts` aggregates all books + flat blog articles.
+- Full contracts and checklists: `content-pipeline.md`.
+
+---
+
+## 8. Components (quick index)
+
+Barrel import surface: `import { ... } from "@/app/components/xcomponents"`.
+
+- **npm**: `XNavbar`, `XFooter`, `XSeparator`, `XZigZagLayout`, `XBookReader`,
+  `XBookReaderIllus`, `XInteractivePhrase`, `XDecryptedText`, `XCompleteBook`,
+  `XBookFullDecrypt`, `XContactForm`, `XNewsletter`, `XSocialContact`.
+- **local reusable**: `XGlassNavbar`, `XZigZagLayoutVideo`, `XHomeColors`,
+  `XBookColors`, `BookReaderPoems`, `XMinimalFooter`.
+- **app-level**: `ClientComponentHome`, `AsciiLoadingAnimation`, `LenisProvider`,
+  `transitionProvider`, `ConditionalSeparator`, `XFooterComponent`,
+  `PublicKeyCard`, `SocialGrid`, `ParticlesBackground`, `BlogListClient`,
+  `ObrasClientPage`, `XBlogDecrypt`, `XTextDecrypt`, `GrafoPoetico`, reader
+  wrappers (`AsintotaBook`, `CielosDeAlquitranBook`, `AmapolasBook`),
+  `navbarIcons`.
+
+Props, behavior and recipes: `component-catalog.md`.
+
+> `XContactForm`, `XNewsletter` and `XSocialContact` are re-exported but **not
+> rendered** by any page today; there is no newsletter backend. Don’t assume they
+> are wired up.
+
+---
+
+## 9. Build & deployment
+
+```bash
+npm install
+npm run dev            # http://localhost:3000
+npx tsc --noEmit       # authoritative type check (next lint is flaky on Next 16)
+npm run build          # next build → out/ + postbuild next-sitemap
 ```
 
-### Build output automation
+- Static export to `out/`; `robots.txt` + sitemaps are **generated**.
+- Security headers live in `public/.htaccess` (Apache: HSTS, CSP, nosniff,
+  frame/referrer/permissions, sensitive-file block, cache, deflate) and
+  `public/_headers` (subset for `_headers` platforms). `'unsafe-inline'` is
+  required by the static export.
+- `public/x-public.asc` is fetched at runtime by `PublicKeyCard`.
+- Background frame counts must match each reader’s `TOTAL_BG`
+  (asintota 72, amapolas 31, cielos 30).
 
-| File | Source | Auto-generated? | Notes |
-|---|---|---|---|
-| `out/.htaccess` | `public/.htaccess` |ok/  Copied by Next.js | Edit `public/.htaccess` directly, then rebuild |
-| `out/robots.txt` | `next-sitemap` (`postbuild`) |ok/ Generated fresh | **Do not** put a `robots.txt` in `public/` — next-sitemap would skip generation |
-| `out/sitemap.xml` | `next-sitemap` (`postbuild`) |ok/ Generated fresh | Domain comes from `next-sitemap.config.js` → `siteUrl` |
-| `out/sitemap-0.xml` | `next-sitemap` (`postbuild`) |ok/ Generated fresh | Same |
-| `out/api/subscribe/guardar_email.php` | `src/app/api/` | X/ Manual deploy | See PHP exception below |
-
-> **Rule**: if it's in `public/`, edit the source file and rebuild. If it's generated by `next-sitemap`, don't create a source file — let the tool generate it.
-
-### PHP exception
-
-Even though `output: "export"` is set, the `api/subscribe/guardar_email.php` file is kept in `src/app/api/` and deployed manually to the server. It is excluded from the Next.js build and served directly by Apache.
-
-### `.htaccess`
-
-Located at `public/.htaccess`. Provides Apache rewrite rules, security headers, cache control, compression, and file blocking. Copied to the build output by Next.js automatically.
-
-**To modify**: edit `public/.htaccess` and rebuild. No other step needed.
-
-| Security measure | Value |
-|---|---|
-| HSTS | `max-age=31536000; includeSubDomains; preload` |
-| X-Content-Type-Options | `nosniff` |
-| X-Frame-Options | `SAMEORIGIN` |
-| Referrer-Policy | `strict-origin-when-cross-origin` |
-| Permissions-Policy | `camera=(), microphone=(), geolocation=(), interest-cohort=()` |
-| CSP | `default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; ...` |
-
-> `'unsafe-inline'` is required for Next.js static export inline scripts/styles. A nonce-based CSP would require server-side rendering.
+Details and failure modes: `build-and-deploy.md`.
 
 ---
 
-## 10. SEO and Metadata
+## 10. Conventions & guardrails
 
-- Comprehensive `layout.tsx` metadata: OpenGraph, Twitter cards, title template, description, keywords.
-- Per-page `generateMetadata()` or `export const metadata` overrides for all routes.
-- `next-sitemap` generates `sitemap.xml` with per-page priorities.
-- `robots.txt` allows all crawlers, points to sitemap.
+1. **Use tokens**, not raw colors (except the documented palettes).
+2. **Text over art goes on a marker chip.**
+3. **Import reusable components via the `"use client"` barrel.**
+   Never import `@xscriptor/xcomponents` directly in a Server Component.
+4. **Never fork npm components locally** — update `@xscriptor/xcomponents` and
+   bump the version. Re-apply the patches in `docs/xcomponents-fixes.md` if you
+   upgrade.
+5. **Pages are thin server components**; interactivity lives in client
+   components.
+6. **Copy goes in `messages/*.json` for all five locales** (plus the documented
+   in-component dictionaries where they exist).
+7. **Add keys to every locale** and, for content, add the same slug across
+   locale folders.
+8. **Respect `prefers-reduced-motion`** in any new animation.
+9. **Use `clamp()`** for fluid padding; avoid bare `vw`.
+10. **No runtime/server features** (route handlers, middleware, revalidate).
+11. **Validate before finalizing**: `npx tsc --noEmit` then `npm run build`.
+12. **Don’t commit secrets** (there are none by design).
 
----
+### Known gotchas (see `architecture.md` §11 / `code-structure.md` §6)
 
-## 11. i18n System
-
-The site supports **3 languages** (Spanish, English, German) via a custom i18n system:
-
-### Message files
-- `messages/{es,en,de}.json` — JSON files with namespace-based structure
-- Namespaces: `Layout`, `Navbar`, `Footer`, `HomePage`, `BlogPage`, `ObrasPage`, `Books`, `ContactPage`, `ContactForm`, `Newsletter`, `BookReader`, `InfoPage`, `TermsPage`, `HomePhrases`, `UnderConstruction`
-
-### Provider and hooks
-- `i18n-provider.tsx` — React Context-based provider
-- `I18nProvider` wraps the app with `locale` and `messages`
-- `useLocale()` — returns current locale string
-- `useT(namespace?)` — returns `t(key, params?)` function with dot-path resolution and `{param}` interpolation
-- `t.raw<T>(key)` — for non-string values (arrays, objects)
-
-### Routing
-- `[locale]/` route group for localized pages (SSG with `generateStaticParams`)
-- Root layout hardcodes `es` (fallback for non-prefixed routes)
-- `[locale]/layout.tsx` auto-loads the correct message file per locale
-
-### Article content
-- Blog articles stored in `content/articulos/{locale}/*.md`
-- `articles.ts` functions accept `locale` parameter and fall back to `es/`
-- `getSortedArticles(locale)` — list articles for a locale
-- `getArticleData(slug, locale)` — get single article with locale fallback
-- Translated articles use the same slug, different frontmatter and body
-
-### Book content
-- `content/boulevard/{locale}.mdx` — locale-specific book reader content
-- Same fallback logic as articles
-
-### Component i18n
-- XBookReader: `coverAlt`, `prevLabel`, `nextLabel`, `pageOfLabel` props
-- XNavbar: `navLabel`, `menuLabel`, `linkLabelPrefix`, `themeToggleAriaLabel`, `themeToggleTitle` props
-- XContactForm: `nameLabel`, `emailLabel`, `submitText`, etc. props
-- XNewsletter: `loadingText` prop
-- All components maintain Spanish defaults for backward compatibility
+- Locale list is duplicated in ~9 files; the footer and 404 only handle
+  `en|es|de` and fall back to Spanish for `it`/`fr`.
+- Two UI-text systems (messages vs in-component dictionaries) must be kept in
+  sync.
+- A local unreferenced `xcompletebook/XCompleteBook.tsx` duplicate exists.
+- `gsap` and `react-intersection-observer` are installed but unused in app code.
+- Global `a:hover { color:#ff4141 }` fights accent links.
+- `.htaccess` blocks direct `.json`/`.md` serving (fine for this build).
 
 ---
 
-## 12. Future Improvement Areas
+## 11. Editing recipe (agent checklist)
 
-- **Migrate all `.jsx` pages to `.tsx`** for consistent type safety.
-- **Standardize blog on static route** and remove the legacy PHP-backed `/blog/post` route.
-- **Remove unused dependencies** (`gsap`, `lottie-react` if not actively used; audit `react-intersection-observer` necessity).
-- **Add i18n** if multi-language content is needed.
-- **Replace PHP newsletter endpoint** with a serverless alternative (Formspree, Web3Forms) for simpler hosting.
-- **Audit the local xcomponents** against the npm package to identify drift.
+1. **Locate** the route entry and its client component; read the matching
+   reference (`component-catalog.md`, `book-readers.md`, …).
+2. **Plan** against the design system: tokens, marker chips, motion budget.
+3. **Implement** at the right layer (route vs reusable vs lib vs content vs
+   messages).
+4. **Localize** every string across the five locales; add content slugs in all
+   five folders.
+5. **Verify** light/dark, `<768px`, and reduced-motion.
+6. **Type-check** with `npx tsc --noEmit`, then **build** with `npm run build`.
+7. **Report** what changed and any structural debt you encountered.
 
 ---
 
-## 13. Output Expectations
+## 12. Output expectations
 
-When an AI agent extends this site, the expected result is:
+A correct change to this site is:
 
-- structurally clean and consistent with existing patterns
-- visually minimal and typography-driven
-- thematically consistent (light/dark)
-- responsive without hacks
-- accessible by default
-- easy to maintain by humans after the fact
+- structurally consistent with the existing layers and import rules,
+- visually quiet, typography-driven, on the marker/glass system,
+- correct in light **and** dark themes and on mobile,
+- localized in all five languages,
+- accessible (sr-only text for decrypt animations, focus states, reduced motion),
+- static-export-safe,
+- and easy for a human to maintain afterwards.
 
-If a proposed solution is clever but harder to maintain, reject it. Choose clarity over novelty.
+If a solution is clever but harder to keep consistent with the above, reject it.
