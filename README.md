@@ -4,7 +4,7 @@ Ready-to-use **AI agents** for [OpenCode](https://opencode.ai) and [Claude Code]
 
 ## Contents
 
-- `agents/` — 181 specialized agents (33 groups)
+- `agents/` — 181 specialized agents (37 groups)
 - `senior/agents/` — 24 consolidated senior agents (16 ecosystems)
 - `bundle/` — skill-enabled copies: agents wired to the senior skills (see `bundle/README.md`)
 - `claude/` — generated Claude Code mirror of all agents/skills/commands (see `claude/tools/xscriptor-convert.py`)
@@ -13,7 +13,7 @@ Ready-to-use **AI agents** for [OpenCode](https://opencode.ai) and [Claude Code]
 
 | Repo | Content | Size |
 |---|---|---|
-| [skills](https://github.com/xscriptor-ai/skills) | Project skills + deep-reference skills + slash commands | 3 + 18 + 8 |
+| [skills](https://github.com/xscriptor-ai/skills) | Full-stack project skills + content skills + deep-reference packs | 4 + 1 + 18 |
 | [scripts](https://github.com/xscriptor-ai/scripts) | Utility scripts (install, validate, generate, ...) | 8 scripts |
 | [packages](https://github.com/xscriptor-ai/packages) | npm packages (`@xscriptor/ai-agents` + skill packages) | 4 packages |
 

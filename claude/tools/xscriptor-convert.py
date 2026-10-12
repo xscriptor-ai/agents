@@ -2,7 +2,8 @@
 """Convert xscriptor-ai/agents + xscriptor-ai/skills (OpenCode format) -> Claude Code format in ~/.claude/.
 
 Sources:
-  --src         agents repo root (needs agents/ and senior/agents/)
+  --src         agents repo root (needs agents/ and senior/agents/; commands are
+                read from claude/commands, with agents/commands as fallback)
   --skills-src  skills repo root (needs senior/ and web-fullstack/; content/ optional)
                 default: sibling ../skills of --src, else the same --src (legacy monorepo)
 """
@@ -163,7 +164,7 @@ def convert_skill(skill_dir, dst_name):
 def convert_command(path):
     fm, body = split_fm(path.read_text())
     fm = fm or {}
-    name = "x-" + path.stem
+    name = path.stem if path.stem.startswith("x-") else "x-" + path.stem
     new = {"description": str(fm.get("description", "")).strip(),
            "argument-hint": "[target]"}
     agent = fm.get("agent")
@@ -171,6 +172,9 @@ def convert_command(path):
         body = (f"Delegate this task to the `{agent}` subagent via the Task tool, "
                 f"passing along the context below.\n\n" + body.lstrip())
         new["allowed-tools"] = "Task, Read, Glob, Grep, Bash(git diff:*), Bash(git status:*)"
+    elif fm.get("allowed-tools"):
+        # Already in Claude Code form (e.g. re-running over claude/commands): keep it.
+        new["allowed-tools"] = fm["allowed-tools"]
     out = DST / "commands" / f"{name}.md"
     if not DRY:
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -204,8 +208,14 @@ def main():
         for p in sorted(content_dir.rglob("SKILL.md")):
             convert_skill(p.parent, p.parent.name)
 
-    commands_src = SKILLS_SRC / "commands"
-    if commands_src.is_dir():
+    # Commands live in the agents repo (claude/commands). Keep the older
+    # agents/commands and skills/commands locations as fallbacks.
+    commands_src = next(
+        (c for c in (SRC / "claude" / "commands", SRC / "commands",
+                     SKILLS_SRC / "commands") if c.is_dir()),
+        None,
+    )
+    if commands_src:
         for p in sorted(commands_src.glob("*.md")):
             if p.name == "README.md":
                 continue
