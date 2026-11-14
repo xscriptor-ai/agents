@@ -1,0 +1,20 @@
+Xscriptor Agents
+Copyright (c) 2026 xscriptor
+https://github.com/xscriptor-ai/agents
+
+Code (scripts and tooling) is licensed under the GNU General Public License,
+version 3 or later (GPL-3.0-or-later). See LICENSE for the full text.
+
+Documentation, agent definitions, skills, commands and other content are
+licensed under the Creative Commons Attribution-ShareAlike 4.0 International
+License (CC-BY-SA-4.0). See LICENSE-CONTENT for the full text.
+
+Attribution-preservation additional term (GPL-3.0 section 7(b)) for the code:
+if you reuse, adapt or redistribute the code or a substantial portion of it,
+you must keep this NOTICE file and the copyright and license notices intact,
+and credit "xscriptor-ai" with a link to the original repository.
+
+Preferred attribution:
+  Based on Xscriptor Agents by xscriptor-ai
+  (https://github.com/xscriptor-ai/agents), licensed under GPL-3.0-or-later
+  (code) and CC-BY-SA-4.0 (content).

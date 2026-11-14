@@ -32,4 +32,9 @@ bash <(curl -fsSL https://raw.githubusercontent.com/xscriptor-ai/scripts/main/in
 
 ## License
 
-MIT
+- Code (scripts and tooling): [GPL-3.0-or-later](LICENSE)
+- Documentation and content (agents, skills, commands): [CC BY-SA 4.0](LICENSE-CONTENT)
+
+Reuse and redistribution are welcome under those terms. Attribution is
+required; see [NOTICE](NOTICE) for the preferred credit and the
+attribution-preservation term for code (GPL-3.0 §7(b)).
